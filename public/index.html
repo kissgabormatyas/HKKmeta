@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>HKK Meta</title>
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+  <h1>HKK Meta</h1>
+  <p class="data-period">
+    Statisztikai időszak: <strong>2025.12.01. – 2026.05.30.</strong>
+  </p>
+
+  <details class="collapsible-section orange-section">
+    <summary>Narancslapok</summary>
+  <section class="orange-section">
+
+    <div class="charts">
+      <div class="chart-box">
+        <canvas id="orangeChart"></canvas>
+      </div>
+
+      <div class="chart-box">
+        <canvas id="orangeTopChart"></canvas>
+      </div>
+    </div>
+
+    <div class="orange-top-cards">
+
+      <div>
+        <h2>TOP3 Epikus</h2>
+        <div id="topEpicCards" class="small-card-list"></div>
+      </div>
+
+      <div>
+        <h2>TOP3 Követő</h2>
+        <div id="topFollowerCards" class="small-card-list"></div>
+      </div>
+
+      <div>
+        <h2>TOP3 Szabálylap</h2>
+        <div id="topRuleCards" class="small-card-list"></div>
+      </div>
+
+    </div>
+
+  </section>
+</details>
+  <div class="filter-panel">
+    <label for="valueSelect">Megjelenítés:</label>
+
+    <select id="valueSelect">
+      <option value="Alap összesen">Főpakli</option>
+      <option value="Side összesen">Side</option>
+      <option value="TOP">TOP20%</option>
+      <option value="SUM">Összesen</option>
+    </select>
+  </div>
+
+  <main class="dashboard-layout">
+
+    <section class="dashboard-charts">
+
+      <div class="charts">
+        <div class="chart-box">
+          <canvas id="colorChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+          <canvas id="typeChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+          <canvas id="functionChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+          <canvas id="editionChart"></canvas>
+        </div>
+      </div>
+
+    </section>
+
+    <aside class="top10-sidebar">
+      <h2>TOP10 lap</h2>
+      <div id="top10Cards"></div>
+    </aside>
+
+    <section class="meta-analysis">
+      <h2>Meta elemzés</h2>
+
+      <p>
+        Ide fog majd jönni a szöveges elemzés igény és idő esetén.
+      </p>
+
+      <p>
+        What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      </p>
+
+      <p>
+        What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      </p>
+
+      <p>
+        What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      </p>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-logo">HKK META</div>
+    <div class="footer-copy">© 2026 HKK Meta</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <script src="./script.js" charset="UTF-8"></script>
+
+</body>
+</html>

@@ -1,0 +1,354 @@
+/* =========================
+   Alap oldal
+========================= */
+
+body {
+  max-width: 1400px;
+  margin: 24px auto;
+  padding: 0 24px;
+  font-family: Arial, sans-serif;
+  background: #f4f1ec;
+  color: #222;
+}
+
+h1 {
+  margin-bottom: 8px;
+  font-size: 42px;
+  letter-spacing: 1px;
+  color: #5b3514;
+}
+
+h2 {
+  color: #5b3514;
+}
+
+.data-period {
+  margin-top: -8px;
+  margin-bottom: 32px;
+  color: #666;
+  font-size: 16px;
+  letter-spacing: 0.3px;
+}
+
+.data-period strong {
+  color: #333;
+}
+
+/* =========================
+   Közös kártya kinézet
+========================= */
+
+.orange-section,
+.chart-box,
+.top10-sidebar,
+.meta-analysis {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   Narancslap szekció
+========================= */
+
+.orange-section {
+  margin-bottom: 40px;
+  background: linear-gradient(180deg, #fff7ef, #ffffff);
+  border: 1px solid #f0d1aa;
+}
+
+.orange-top-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.small-card-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.small-card-list .card-image {
+  width: 150px;
+}
+
+/* =========================
+   Fő dashboard layout
+========================= */
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  grid-template-areas:
+    "charts top10"
+    "analysis top10";
+  gap: 24px;
+  align-items: start;
+}
+
+.dashboard-charts {
+  grid-area: charts;
+  min-width: 0;
+}
+
+.top10-sidebar {
+  grid-area: top10;
+  position: sticky;
+  top: 16px;
+}
+
+.meta-analysis {
+  grid-area: analysis;
+}
+
+/* =========================
+   Chartok
+========================= */
+
+.charts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  width: 100%;
+}
+
+.chart-box {
+  position: relative;
+  height: 420px;
+  min-width: 0;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* =========================
+   Fix select
+========================= */
+
+.filter-panel {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #e0d4c4;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.filter-panel label {
+  font-size: 12px;
+  color: #666;
+}
+
+.filter-panel select {
+  min-width: 140px;
+  padding: 8px 12px;
+  border: 1px solid #c8b8a4;
+  border-radius: 8px;
+  background: #fffaf4;
+}
+
+/* =========================
+   Kártyaképek
+========================= */
+
+.card-image {
+  display: block;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s ease;
+}
+
+.card-image:hover {
+  transform: scale(1.03);
+}
+
+#top10Cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#top10Cards .card-image {
+  width: 100%;
+}
+
+/* =========================
+   Meta elemzés
+========================= */
+
+.meta-analysis {
+  margin-top: 16px;
+}
+
+.meta-analysis h2 {
+  margin-top: 0;
+}
+
+.meta-analysis p {
+  line-height: 1.8;
+}
+
+/* =========================
+   Footer
+========================= */
+
+.site-footer {
+  margin-top: 60px;
+  padding: 32px;
+  text-align: center;
+  background: #2d1b0f;
+  color: #f3e7d7;
+  border-radius: 16px 16px 0 0;
+}
+
+.footer-logo {
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  color: #f0b35a;
+}
+
+.footer-copy {
+  margin-top: 8px;
+  color: #c9b8a3;
+}
+
+/* =========================
+   Tablet / Desktop
+========================= */
+
+@media (min-width: 768px) {
+
+  .charts {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .orange-top-cards {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+}
+
+/* =========================
+   Mobil
+========================= */
+
+@media (max-width: 767px) {
+
+  body {
+    margin: 0;
+    padding: 12px;
+  }
+
+  h1 {
+    font-size: 30px;
+    padding-right: 140px;
+  }
+
+  .data-period {
+    margin-top: -4px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "charts"
+      "top10"
+      "analysis";
+  }
+
+  .chart-box {
+    height: 360px;
+  }
+
+  .top10-sidebar {
+    position: static;
+  }
+
+  .top10-sidebar h2 {
+    margin-top: 0;
+    font-size: 18px;
+  }
+
+  #top10Cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .small-card-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .small-card-list .card-image {
+    width: 100%;
+  }
+
+  .filter-panel {
+    top: 8px;
+    right: 8px;
+    padding: 8px;
+    min-width: 120px;
+  }
+
+  .filter-panel label {
+    display: none;
+  }
+
+  .filter-panel select {
+    min-width: 120px;
+    font-size: 14px;
+  }
+
+}
+
+.collapsible-section summary {
+  cursor: pointer;
+  margin: -20px -20px 20px;
+  padding: 16px 20px;
+
+  font-size: 22px;
+  font-weight: bold;
+  color: #5b3514;
+
+  border-bottom: 1px solid #ead8c2;
+  list-style: none;
+}
+
+.collapsible-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.collapsible-section summary::after {
+  content: "−";
+  float: right;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.collapsible-section:not([open]) summary {
+  margin-bottom: -20px;
+  border-bottom: none;
+}
+
+.collapsible-section:not([open]) summary::after {
+  content: "+";
+}
