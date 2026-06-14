@@ -161,7 +161,7 @@ fs.readFile("./data/Topcards.csv", "utf8", (err, data) => {
         const match = findJsonCard(jsonCards, card["Lap"]);
 
         if (match) {
-          const editionId = match.editions[0];
+          const editionId = Math.max(...match.editions.map(Number));
 
           card["ID"] = match.ID;
           card["name"] = match.name;
