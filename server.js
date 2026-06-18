@@ -5,8 +5,37 @@ import fs from "fs";
 const app = express();
 const port = 3000;
 
-let cards = [];
-let orangeCards = [];
+const formats = {
+  classic: {
+    topcardsPath: "./data/topcards-classic.csv",
+    orangeCardsPath: "./data/orange-classic.csv",
+    period: "2025.12.01 - 2026.05.31"
+  },
+  tm: {
+    topcardsPath: "./data/topcards-tm.csv",
+    orangeCardsPath: "./data/orange-tm.csv",
+    period: "2026.01.01 - 2026.06.18"
+  }
+};
+
+app.get("/api/format-info", (req, res) => {
+  const format = getRequestedFormat(req);
+
+  res.json({
+    period: formats[format].period
+  });
+});
+
+const formatData = {
+  classic: {
+    cards: [],
+    orangeCards: []
+  },
+  tm: {
+    cards: [],
+    orangeCards: []
+  }
+};
 
 app.use(express.static("public"));
 
@@ -52,6 +81,29 @@ function findJsonCard(jsonCards, name) {
   return jsonCards.find((jsonCard) => {
     return normalizeCardName(jsonCard.name).toLowerCase() === cleanName;
   });
+}
+
+function readTextFile(path) {
+  return fs.promises.readFile(path, "utf8");
+}
+
+function parseCsv(data) {
+  const result = Papa.parse(data, {
+    header: true,
+    skipEmptyLines: true
+  });
+
+  return result.data;
+}
+
+function getRequestedFormat(req) {
+  const requestedFormat = req.query.format;
+
+  if (formats[requestedFormat]) {
+    return requestedFormat;
+  }
+
+  return "classic";
 }
 
 // ======================================
@@ -120,124 +172,141 @@ function getOrangeType(cardName, jsonCards) {
   return null;
 }
 
-// ======================================
-// Topcards.csv beolvasása
-// ======================================
-
-fs.readFile("./data/Topcards.csv", "utf8", (err, data) => {
-  if (err) {
-    console.error("Topcards.csv beolvasási hiba:", err);
-    return;
+function shouldKeepTopCard(card) {
+  if (!card.type) {
+    return true;
   }
 
-  const result = Papa.parse(data, {
-    header: true,
-    skipEmptyLines: true
+  return !card.type.some((type) => {
+    const cleanType = type.toLowerCase();
+
+    return (
+      cleanType.includes("követő") ||
+      cleanType.includes("szabálylap")
+    );
   });
+}
 
-  cards = result.data;
+// ======================================
+// Topcards feldolgozása
+// ======================================
 
-  cards.forEach((card) => {
+function buildTopCards(csvCards, jsonCards, editions) {
+  csvCards.forEach((card) => {
     prepareCsvCard(card);
   });
 
-  fs.readFile("./data/cards.json", "utf8", (err, jsonData) => {
-    if (err) {
-      console.error("cards.json beolvasási hiba:", err);
-      return;
+  csvCards.forEach((card) => {
+    const match = findJsonCard(jsonCards, card["Lap"]);
+
+    if (match) {
+      const editionId = Math.max(...match.editions.map(Number));
+
+      card["ID"] = match.ID;
+      card["name"] = match.name;
+      card["link"] = match.link;
+
+      card["type"] = match.type;
+      card["color"] = match.color;
+      card["edition"] = editions[editionId];
+      card["flag"] = match.flags || "Nincs";
     }
-
-    const jsonCards = JSON.parse(jsonData);
-
-    fs.readFile("./data/editions.json", "utf8", (err, editionData) => {
-      if (err) {
-        console.error("editions.json beolvasási hiba:", err);
-        return;
-      }
-
-      const editions = JSON.parse(editionData);
-
-      cards.forEach((card) => {
-        const match = findJsonCard(jsonCards, card["Lap"]);
-
-        if (match) {
-          const editionId = Math.max(...match.editions.map(Number));
-
-          card["ID"] = match.ID;
-          card["name"] = match.name;
-          card["link"] = match.link;
-
-          card["type"] = match.type;
-          card["color"] = match.color;
-          card["edition"] = editions[editionId];
-          card["flag"] = match.flags || "Nincs";
-        }
-      });
-    });
-  });
-});
-
-// ======================================
-// OrangeCards.csv beolvasása
-// ======================================
-
-fs.readFile("./data/OrangeCards.csv", "utf8", (err, data) => {
-  if (err) {
-    console.error("OrangeCards.csv beolvasási hiba:", err);
-    return;
-  }
-
-  const result = Papa.parse(data, {
-    header: true,
-    skipEmptyLines: true
   });
 
-  orangeCards = result.data;
+  return csvCards.filter((card) => {
+    return shouldKeepTopCard(card);
+  });
+}
 
-  orangeCards.forEach((card) => {
+// ======================================
+// Narancslapok feldolgozása
+// ======================================
+
+function buildOrangeCards(csvCards, jsonCards) {
+  csvCards.forEach((card) => {
     prepareCsvCard(card);
   });
 
-  fs.readFile("./data/cards.json", "utf8", (err, jsonData) => {
-    if (err) {
-      console.error("cards.json beolvasási hiba narancslapokhoz:", err);
-      return;
+  csvCards.forEach((card) => {
+    const match = findJsonCard(jsonCards, card["Lap"]);
+
+    if (match) {
+      card["ID"] = match.ID;
+      card["name"] = match.name;
+      card["link"] = match.link;
     }
 
-    const jsonCards = JSON.parse(jsonData);
-
-    orangeCards.forEach((card) => {
-
-      const match = findJsonCard(jsonCards, card["Lap"]);
-
-  if (match) {
-    card["ID"] = match.ID;
-    card["name"] = match.name;
-    card["link"] = match.link;
-  }
-
-      card["orangeType"] = getOrangeType(card["Lap"], jsonCards);
-    });
+    card["orangeType"] = getOrangeType(card["Lap"], jsonCards);
   });
 
-  
-});
+  return csvCards;
+}
+
+// ======================================
+// Formátum betöltése
+// ======================================
+
+async function loadFormat(formatKey, jsonCards, editions) {
+  const format = formats[formatKey];
+
+  const topcardsCsv = await readTextFile(format.topcardsPath);
+  const orangeCardsCsv = await readTextFile(format.orangeCardsPath);
+
+  const topcardsRows = parseCsv(topcardsCsv);
+  const orangeCardsRows = parseCsv(orangeCardsCsv);
+
+  formatData[formatKey].cards = buildTopCards(
+    topcardsRows,
+    jsonCards,
+    editions
+  );
+
+  formatData[formatKey].orangeCards = buildOrangeCards(
+    orangeCardsRows,
+    jsonCards
+  );
+
+  console.log(`${formatKey} formátum betöltve`);
+}
+
+async function loadAllData() {
+  try {
+    const jsonData = await readTextFile("./data/cards.json");
+    const editionData = await readTextFile("./data/editions.json");
+
+    const jsonCards = JSON.parse(jsonData);
+    const editions = JSON.parse(editionData);
+
+    await loadFormat("classic", jsonCards, editions);
+    await loadFormat("tm", jsonCards, editions);
+
+    console.log("Minden adat betöltve");
+  } catch (err) {
+    console.error("Adatbetöltési hiba:", err);
+  }
+}
 
 // ======================================
 // API végpontok
 // ======================================
 
 app.get("/api/cards", (req, res) => {
-  res.json(cards);
+  const format = getRequestedFormat(req);
+
+  res.json(formatData[format].cards);
 });
 
 app.get("/api/orange-cards", (req, res) => {
-  res.json(orangeCards);
+  const format = getRequestedFormat(req);
+
+  res.json(formatData[format].orangeCards);
 });
 
 // ======================================
 // Szerver indítása
 // ======================================
+
+loadAllData();
 
 const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);

@@ -24,24 +24,281 @@ const colorMap = {
 };
 
 const dashboardPalette = [
-  "#5B3514",
-  "#7B4F1D",
-  "#9A642A",
-  "#B87C34",
-  "#D79B4D",
-  "#E5B96D",
-  "#C06A2B",
-  "#8A4B20",
-  "#B58A5A",
-  "#6D4A2B"
+  "#4A2B11",
+  "#563114",
+  "#623817",
+  "#6E3F1A",
+  "#7A461D",
+  "#864D20",
+  "#925423",
+  "#9E5B26",
+  "#AA6229",
+  "#B6692C",
+  "#C27030",
+  "#C97A3C",
+  "#D08448",
+  "#D78E54",
+  "#DE9860",
+  "#E3A56F",
+  "#E8B27E",
+  "#EDBF8D",
+  "#F2CC9C",
+  "#F7D9AB",
+  "#F9E0B7",
+  "#FBE6C3",
+  "#FCECCF",
+  "#FEF2DB"
 ];
+
+const orangePalette = [
+  "#8A5722", // bronz
+  "#C27030", // réz/arany
+  "#E8B27E", // világos arany
+  "#5B3514"  // mélybarna
+];
+
+const valueLabels = {
+  "Alap összesen": "Főpakli",
+  "Side összesen": "Side",
+  "TOP": "TOP20%",
+  "SUM": "Összesen"
+};
 
 
 // ======================================
-// Chart példányok tárolása
+// Állapot
 // ======================================
 
 const charts = {};
+
+const filterState = {
+  selectedColors: [],
+  selectedFlag: "Összes",
+  valueKey: "Alap összesen"
+};
+
+let allCards = [];
+let currentFormat = "classic";
+
+
+// ======================================
+// Segédfüggvények
+// ======================================
+
+function getArrayValue(value) {
+  if (!value) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  return [value];
+}
+
+function getCardValue(card, valueKey) {
+  return Number(card[valueKey]) || 0;
+}
+
+function getComparableTopValue(card) {
+  return Number(getCardValue(card, "TOP").toFixed(2));
+}
+
+function isRenderableCard(card) {
+  return card && card.ID && card.link && card.name;
+}
+
+function getSelectedCards(cards) {
+  return cards.filter((card) => {
+    const colors = getArrayValue(card.color);
+    const flags = getArrayValue(card.flag);
+
+    const colorMatches =
+      filterState.selectedColors.length === 0 ||
+      filterState.selectedColors.some((selectedColor) => colors.includes(selectedColor));
+
+    const flagMatches =
+      filterState.selectedFlag === "Összes" ||
+      flags.includes(filterState.selectedFlag);
+
+    return colorMatches && flagMatches;
+  });
+}
+
+function resetFilters() {
+  filterState.selectedColors = [];
+  filterState.selectedFlag = "Összes";
+
+  const flagSelect = document.getElementById("flagSelect");
+
+  if (flagSelect) {
+    flagSelect.value = "Összes";
+  }
+
+  updateColorFilterButtons();
+}
+
+
+// ======================================
+// Formátumváltó
+// ======================================
+
+function setupFormatSwitcher() {
+  const buttons = document.querySelectorAll("[data-format]");
+
+  if (buttons.length === 0) {
+    return;
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const selectedFormat = button.dataset.format;
+
+      if (!selectedFormat || selectedFormat === currentFormat) {
+        return;
+      }
+
+      currentFormat = selectedFormat;
+
+      buttons.forEach((formatButton) => {
+        formatButton.classList.toggle(
+          "active",
+          formatButton.dataset.format === currentFormat
+        );
+      });
+
+      resetFilters();
+      loadDashboardData();
+    });
+  });
+}
+
+
+// ======================================
+// Szűrő UI
+// ======================================
+
+function renderColorFilters(cards) {
+  const container = document.getElementById("colorFilters");
+
+  if (!container) {
+    return;
+  }
+
+  const colors = Object.keys(colorMap).filter((color) => {
+    return cards.some((card) => getArrayValue(card.color).includes(color));
+  });
+
+  container.innerHTML = `
+    <button
+      type="button"
+      class="color-filter-button color-filter-reset active"
+      data-color=""
+      title="Összes szín"
+      aria-label="Összes szín"
+    ></button>
+    ${colors
+      .map((color) => {
+        return `
+          <button
+            type="button"
+            class="color-filter-button"
+            data-color="${color}"
+            title="${color}"
+            aria-label="${color}"
+            style="--filter-color: ${colorMap[color]}"
+          ></button>
+        `;
+      })
+      .join("")}
+  `;
+
+  container.querySelectorAll(".color-filter-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const color = button.dataset.color;
+
+      if (!color) {
+        filterState.selectedColors = [];
+      } else if (filterState.selectedColors.includes(color)) {
+        filterState.selectedColors = filterState.selectedColors.filter((selectedColor) => {
+          return selectedColor !== color;
+        });
+      } else {
+        filterState.selectedColors.push(color);
+      }
+
+      updateColorFilterButtons();
+      refreshDashboard();
+    });
+  });
+}
+
+function updateColorFilterButtons() {
+  const buttons = document.querySelectorAll(".color-filter-button");
+
+  buttons.forEach((button) => {
+    const color = button.dataset.color;
+
+    if (!color) {
+      button.classList.toggle("active", filterState.selectedColors.length === 0);
+      return;
+    }
+
+    button.classList.toggle("active", filterState.selectedColors.includes(color));
+  });
+}
+
+function renderFlagFilter(cards) {
+  const flagSelect = document.getElementById("flagSelect");
+
+  if (!flagSelect) {
+    return;
+  }
+
+  const flags = new Set();
+
+  cards.forEach((card) => {
+    getArrayValue(card.flag).forEach((flag) => {
+      if (flag && flag !== "Nincs") {
+        flags.add(flag);
+      }
+    });
+  });
+
+  const sortedFlags = Array.from(flags).sort((a, b) => {
+    return a.localeCompare(b, "hu");
+  });
+
+  flagSelect.innerHTML = `
+    <option value="Összes">Összes</option>
+    ${sortedFlags
+      .map((flag) => `<option value="${flag}">${flag}</option>`)
+      .join("")}
+  `;
+
+  flagSelect.value = filterState.selectedFlag;
+
+  flagSelect.onchange = () => {
+    filterState.selectedFlag = flagSelect.value;
+    refreshDashboard();
+  };
+}
+
+function setupValueFilter() {
+  const valueSelect = document.getElementById("valueSelect");
+
+  if (!valueSelect) {
+    return;
+  }
+
+  filterState.valueKey = valueSelect.value;
+
+  valueSelect.onchange = () => {
+    filterState.valueKey = valueSelect.value;
+    refreshDashboard();
+  };
+}
 
 
 // ======================================
@@ -52,13 +309,10 @@ function getColorCounts(cards, valueKey) {
   const colorCounts = {};
 
   cards.forEach((card) => {
-    if (!card.color) {
-      return;
-    }
+    const colors = getArrayValue(card.color);
+    const value = getCardValue(card, valueKey);
 
-    const value = Number(card[valueKey]) || 0;
-
-    card.color.forEach((color) => {
+    colors.forEach((color) => {
       if (color === "Nincs") {
         return;
       }
@@ -83,17 +337,19 @@ function getTypeCounts(cards, valueKey) {
   const typeCounts = {};
 
   cards.forEach((card) => {
-    if (!card.type) {
+    const types = getArrayValue(card.type);
+
+    if (types.length === 0) {
       return;
     }
 
-    const type = card.type[0];
+    const type = types[0];
 
     if (type === "Követő") {
       return;
     }
 
-    const value = Number(card[valueKey]) || 0;
+    const value = getCardValue(card, valueKey);
 
     if (typeCounts[type]) {
       typeCounts[type] += value;
@@ -119,7 +375,7 @@ function getEditionCounts(cards, valueKey) {
     }
 
     const edition = card.edition;
-    const value = Number(card[valueKey]) || 0;
+    const value = getCardValue(card, valueKey);
 
     if (editionCounts[edition]) {
       editionCounts[edition] += value;
@@ -140,13 +396,10 @@ function getFlagCounts(cards, valueKey) {
   const flagCounts = {};
 
   cards.forEach((card) => {
-    if (!card.flag) {
-      return;
-    }
+    const flags = getArrayValue(card.flag);
+    const value = getCardValue(card, valueKey);
 
-    const value = Number(card[valueKey]) || 0;
-
-    card.flag.forEach((flag) => {
+    flags.forEach((flag) => {
       if (flag === "Nincs") {
         return;
       }
@@ -175,7 +428,7 @@ function getOrangeTypeCounts(orangeCards, valueKey) {
       return;
     }
 
-    const value = Number(card[valueKey]) || 0;
+    const value = getCardValue(card, valueKey);
 
     if (value === 0) {
       return;
@@ -196,8 +449,8 @@ function getOrangeTypeCounts(orangeCards, valueKey) {
 // Objektum rendezése és chart-adattá alakítása
 // ======================================
 
-function prepareChartData(counts, useColorMap = false) {
-  const entries = Object.entries(counts);
+function prepareChartData(counts, useColorMap = false, customPalette = null) {
+  const entries = Object.entries(counts).filter((entry) => Number(entry[1]) > 0);
 
   entries.sort((a, b) => {
     return b[1] - a[1];
@@ -207,11 +460,11 @@ function prepareChartData(counts, useColorMap = false) {
   const values = entries.map((entry) => entry[1]);
   const total = values.reduce((sum, value) => sum + value, 0);
 
+  const palette = customPalette || dashboardPalette;
+
   const colors = useColorMap
-  ? labels.map((label) => colorMap[label])
-  : labels.map((_, index) =>
-      dashboardPalette[index % dashboardPalette.length]
-    );
+    ? labels.map((label) => colorMap[label] || "#B58A5A")
+    : labels.map((_, index) => palette[index % palette.length]);
 
   return {
     labels: labels,
@@ -241,7 +494,14 @@ function renderCards(containerId, cards) {
     return;
   }
 
-  container.innerHTML = cards
+  const renderableCards = cards.filter(isRenderableCard);
+
+  if (renderableCards.length === 0) {
+    container.innerHTML = `<p class="empty-state">Nincs megjeleníthető lap.</p>`;
+    return;
+  }
+
+  container.innerHTML = renderableCards
     .map((card) => {
       return `
         <a href="${getCardPageUrl(card)}" target="_blank">
@@ -258,35 +518,102 @@ function renderCards(containerId, cards) {
 
 function renderTop10Cards(cards, valueKey) {
   const top10Cards = cards
-    .filter((card) => Number(card[valueKey]) > 0)
-    .sort((a, b) => Number(b[valueKey]) - Number(a[valueKey]))
+    .filter((card) => getCardValue(card, valueKey) > 0)
+    .sort((a, b) => getCardValue(b, valueKey) - getCardValue(a, valueKey))
     .slice(0, 10);
 
   renderCards("top10Cards", top10Cards);
 }
 
-function renderOrangeTopCards(orangeCards) {
-  const topEpicCards = orangeCards
-    .filter((card) => card.orangeType === "Epikus")
-    .filter((card) => Number(card.TOP) > 0)
-    .sort((a, b) => Number(b.TOP) - Number(a.TOP))
-    .slice(0, 3);
 
-  const topFollowerCards = orangeCards
-    .filter((card) => card.orangeType === "Követő")
-    .filter((card) => Number(card.TOP) > 0)
-    .sort((a, b) => Number(b.TOP) - Number(a.TOP))
-    .slice(0, 3);
+// ======================================
+// Legjobb narancslapok holtversennyel
+// ======================================
 
-  const topRuleCards = orangeCards
-    .filter((card) => card.orangeType === "Szabálylap")
-    .filter((card) => Number(card.TOP) > 0)
-    .sort((a, b) => Number(b.TOP) - Number(a.TOP))
-    .slice(0, 3);
+function getBestOrangeCardsWithTies(orangeCards, limit = 10) {
+  const validCards = orangeCards
+    .filter(isRenderableCard)
+    .filter((card) => getComparableTopValue(card) > 0)
+    .sort((a, b) => getComparableTopValue(b) - getComparableTopValue(a));
 
-  renderCards("topEpicCards", topEpicCards);
-  renderCards("topFollowerCards", topFollowerCards);
-  renderCards("topRuleCards", topRuleCards);
+  const includedCards = [];
+
+  for (const card of validCards) {
+    const value = getComparableTopValue(card);
+
+    const betterCardCount = validCards.filter((otherCard) => {
+      return getComparableTopValue(otherCard) > value;
+    }).length;
+
+    const rank = betterCardCount + 1;
+
+    if (rank <= limit) {
+      includedCards.push(card);
+    }
+  }
+
+  return includedCards;
+}
+
+function getOrangeRank(card, cards) {
+  const value = getComparableTopValue(card);
+
+  const betterCardCount = cards.filter((otherCard) => {
+    return getComparableTopValue(otherCard) > value;
+  }).length;
+
+  return betterCardCount + 1;
+}
+
+function getOrangeTieCount(card, cards) {
+  const value = getComparableTopValue(card);
+
+  return cards.filter((otherCard) => {
+    return getComparableTopValue(otherCard) === value;
+  }).length;
+}
+
+function renderBestOrangeCards(orangeCards) {
+  const container = document.getElementById("bestOrangeCards");
+
+  if (!container) {
+    return;
+  }
+
+  const bestCards = getBestOrangeCardsWithTies(orangeCards, 10);
+
+  if (bestCards.length === 0) {
+    container.innerHTML = `<p class="empty-state">Nincs megjeleníthető narancslap.</p>`;
+    return;
+  }
+
+  container.innerHTML = bestCards
+    .map((card) => {
+      const rank = getOrangeRank(card, bestCards);
+      const tieCount = getOrangeTieCount(card, bestCards);
+
+      return `
+        <article class="best-orange-card ${tieCount > 1 ? "is-tie" : ""}">
+          <div class="best-orange-rank">
+            <span class="rank-number">${rank}.</span>
+          </div>
+
+          <a href="${getCardPageUrl(card)}" target="_blank" class="best-orange-image-link">
+            <img
+              src="${getCardImageUrl(card)}"
+              alt="${card.name}"
+              class="card-image"
+            >
+          </a>
+
+          <div class="best-orange-info">
+            <div class="best-orange-name">${card.name}</div>
+            <div class="best-orange-type">${card.orangeType || "Narancslap"}</div>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
 }
 
 
@@ -314,8 +641,8 @@ function createBarChart(canvasId, title, chartData, horizontal = false) {
           label: title,
           data: chartData.values,
           backgroundColor: chartData.colors,
-          borderColor: "#4A2B11",
-          borderWidth: 1
+          borderColor: "#3A220D",
+          borderWidth: 0.5
         }
       ]
     },
@@ -329,6 +656,7 @@ function createBarChart(canvasId, title, chartData, horizontal = false) {
           text: title
         },
         datalabels: {
+          display: chartData.total > 0,
           font: {
             size: 10
           },
@@ -336,7 +664,7 @@ function createBarChart(canvasId, title, chartData, horizontal = false) {
           align: "end",
           formatter: (value) => {
             if (!chartData.total) {
-              return "0%";
+              return "";
             }
 
             return ((value / chartData.total) * 100).toFixed(1) + "%";
@@ -413,13 +741,13 @@ function createPieChart(canvasId, title, chartData) {
           text: title
         },
         datalabels: {
-            color: "#ffffff",
-            textStrokeColor: "#000000",
-            textStrokeWidth: 3,
-
+          display: chartData.total > 0,
+          color: "#ffffff",
+          textStrokeColor: "#000000",
+          textStrokeWidth: 3,
           formatter: (value) => {
             if (!chartData.total) {
-              return "0%";
+              return "";
             }
 
             return ((value / chartData.total) * 100).toFixed(1) + "%";
@@ -439,12 +767,14 @@ function createPieChart(canvasId, title, chartData) {
 // ======================================
 
 function updateCharts(cards, valueKey) {
+  const valueLabel = valueLabels[valueKey] || valueKey;
+
   const colorCounts = getColorCounts(cards, valueKey);
   const colorData = prepareChartData(colorCounts, true);
 
   createBarChart(
     "colorChart",
-    "Színek szerinti eloszlás",
+    `Színek szerinti eloszlás - ${valueLabel}`,
     colorData
   );
 
@@ -453,7 +783,7 @@ function updateCharts(cards, valueKey) {
 
   createBarChart(
     "typeChart",
-    "Laptípus szerinti eloszlás",
+    `Laptípus szerinti eloszlás - ${valueLabel}`,
     typeData
   );
 
@@ -462,7 +792,7 @@ function updateCharts(cards, valueKey) {
 
   createBarChart(
     "editionChart",
-    "Kiegészítő szerinti eloszlás",
+    `Kiegészítő szerinti eloszlás - ${valueLabel}`,
     editionData,
     true
   );
@@ -472,11 +802,16 @@ function updateCharts(cards, valueKey) {
 
   createBarChart(
     "functionChart",
-    "Funkció szerinti eloszlás",
+    `Funkció szerinti eloszlás - ${valueLabel}`,
     flagData
   );
 
   renderTop10Cards(cards, valueKey);
+}
+
+function refreshDashboard() {
+  const filteredCards = getSelectedCards(allCards);
+  updateCharts(filteredCards, filterState.valueKey);
 }
 
 
@@ -486,7 +821,7 @@ function updateCharts(cards, valueKey) {
 
 function updateOrangeCharts(orangeCards) {
   const orangeCounts = getOrangeTypeCounts(orangeCards, "Alap összesen");
-  const orangeData = prepareChartData(orangeCounts);
+  const orangeData = prepareChartData(orangeCounts, false, orangePalette);
 
   createPieChart(
     "orangeChart",
@@ -495,8 +830,7 @@ function updateOrangeCharts(orangeCards) {
   );
 
   const orangeTopCounts = getOrangeTypeCounts(orangeCards, "TOP");
-  const orangeTopData = prepareChartData(orangeTopCounts);
-
+  const orangeTopData = prepareChartData(orangeTopCounts, false, orangePalette);
   createPieChart(
     "orangeTopChart",
     "Narancslapok eloszlása TOP20%",
@@ -506,24 +840,43 @@ function updateOrangeCharts(orangeCards) {
 
 
 // ======================================
+// Adatbetöltés
+// ======================================
+
+function loadDashboardData() {
+fetch(`/api/format-info?format=${currentFormat}`)
+  .then((response) => response.json())
+  .then((info) => {
+    const periodElement = document.getElementById("dataPeriod");
+
+    if (periodElement) {
+      periodElement.textContent = info.period;
+    }
+  });
+
+  fetch(`/api/cards?format=${currentFormat}`)
+    .then((response) => response.json())
+    .then((cards) => {
+      allCards = cards;
+
+      renderColorFilters(allCards);
+      renderFlagFilter(allCards);
+      refreshDashboard();
+    });
+
+  fetch(`/api/orange-cards?format=${currentFormat}`)
+    .then((response) => response.json())
+    .then((orangeCards) => {
+      updateOrangeCharts(orangeCards);
+      renderBestOrangeCards(orangeCards);
+    });
+}
+
+
+// ======================================
 // Fő program
 // ======================================
 
-fetch("/api/cards")
-  .then((response) => response.json())
-  .then((cards) => {
-    const valueSelect = document.getElementById("valueSelect");
-
-    updateCharts(cards, valueSelect.value);
-
-    valueSelect.addEventListener("change", () => {
-      updateCharts(cards, valueSelect.value);
-    });
-  });
-
-fetch("/api/orange-cards")
-  .then((response) => response.json())
-  .then((orangeCards) => {
-    updateOrangeCharts(orangeCards);
-    renderOrangeTopCards(orangeCards);
-  });
+setupValueFilter();
+setupFormatSwitcher();
+loadDashboardData();

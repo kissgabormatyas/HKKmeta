@@ -20,103 +20,110 @@
 
   <h1>HKK Meta</h1>
   <p class="data-period">
-    Statisztikai időszak: <strong>2025.12.01. – 2026.05.30.</strong>
-  </p>
+  Adatok:
+  <strong id="dataPeriod"></strong>
+</p>
+
+<div class="format-switcher">
+  <button
+    type="button"
+    class="format-button active"
+    data-format="classic"
+  >
+    Hagyományos
+  </button>
+
+  <button
+    type="button"
+    class="format-button"
+    data-format="tm"
+  >
+    Tiltott Mágia
+  </button>
+</div>
+
+  <details class="collapsible-section filter-section" open>
+    <summary>Szűrők</summary>
+
+    <div class="filter-content">
+      <div class="filter-group">
+        <div class="filter-title">Szín</div>
+        <div id="colorFilters" class="color-filter-list"></div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-title" for="flagSelect">Funkció</label>
+        <select id="flagSelect">
+          <option value="Összes">Összes</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-title" for="valueSelect">Megjelenítés</label>
+        <select id="valueSelect">
+          <option value="Alap összesen">Főpakli</option>
+          <option value="Side összesen">Side</option>
+          <option value="TOP">TOP20%</option>
+          <option value="SUM">Összesen</option>
+        </select>
+      </div>
+    </div>
+  </details>
 
   <details class="collapsible-section orange-section">
     <summary>Narancslapok</summary>
-  <section class="orange-section">
-
-    <div class="charts">
-      <div class="chart-box">
-        <canvas id="orangeChart"></canvas>
-      </div>
-
-      <div class="chart-box">
-        <canvas id="orangeTopChart"></canvas>
-      </div>
-    </div>
-
-    <div class="orange-top-cards">
-
-      <div>
-        <h2>TOP3 Epikus</h2>
-        <div id="topEpicCards" class="small-card-list"></div>
-      </div>
-
-      <div>
-        <h2>TOP3 Követő</h2>
-        <div id="topFollowerCards" class="small-card-list"></div>
-      </div>
-
-      <div>
-        <h2>TOP3 Szabálylap</h2>
-        <div id="topRuleCards" class="small-card-list"></div>
-      </div>
-
-    </div>
-
-  </section>
-</details>
-  <div class="filter-panel">
-    <label for="valueSelect">Megjelenítés:</label>
-
-    <select id="valueSelect">
-      <option value="Alap összesen">Főpakli</option>
-      <option value="Side összesen">Side</option>
-      <option value="TOP">TOP20%</option>
-      <option value="SUM">Összesen</option>
-    </select>
-  </div>
-
-  <main class="dashboard-layout">
-
-    <section class="dashboard-charts">
+    <section class="orange-section-inner">
 
       <div class="charts">
         <div class="chart-box">
-          <canvas id="colorChart"></canvas>
+          <canvas id="orangeChart"></canvas>
         </div>
 
         <div class="chart-box">
-          <canvas id="typeChart"></canvas>
-        </div>
-
-        <div class="chart-box">
-          <canvas id="functionChart"></canvas>
-        </div>
-
-        <div class="chart-box">
-          <canvas id="editionChart"></canvas>
+          <canvas id="orangeTopChart"></canvas>
         </div>
       </div>
 
+      <div class="best-orange-block">
+  <h2>Legjobb narancslapok</h2>
+  <p class="best-orange-note">
+    TOP20% alapján, holtversenyekkel együtt.
+  </p>
+
+  <div id="bestOrangeCards" class="best-orange-list"></div>
+</div>
     </section>
+  </details>
 
-    <aside class="top10-sidebar">
-      <h2>TOP10 lap</h2>
-      <div id="top10Cards"></div>
-    </aside>
+  <main class="dashboard-layout">
 
-    <section class="meta-analysis">
-      <h2>Meta elemzés</h2>
+    <details class="collapsible-section dashboard-charts">
+  <summary>Grafikonok</summary>
 
-      <p>
-        Ide fog majd jönni a szöveges elemzés igény és idő esetén.
-      </p>
+  <div class="charts">
+    <div class="chart-box">
+      <canvas id="colorChart"></canvas>
+    </div>
 
-      <p>
-        What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-      </p>
+    <div class="chart-box">
+      <canvas id="typeChart"></canvas>
+    </div>
 
-      <p>
-        What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-      </p>
+    <div class="chart-box">
+      <canvas id="functionChart"></canvas>
+    </div>
 
-      <p>
-        What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-      </p>
-    </section>
+    <div class="chart-box">
+      <canvas id="editionChart"></canvas>
+    </div>
+  </div>
+</details>
+
+<details class="collapsible-section top10-sidebar">
+  <summary>TOP lapok</summary>
+  <div id="top10Cards"></div>
+</details>
+
 
   </main>
 
