@@ -2,13 +2,21 @@
    Alap oldal
 ========================= */
 
+html {
+  min-height: 100%;
+}
+
 body {
+  min-height: 100vh;
   max-width: 1400px;
-  margin: 24px auto;
+  margin: 24px auto 0;
   padding: 0 24px;
   font-family: Arial, sans-serif;
   background: #f4f1ec;
   color: #222;
+
+  display: flex;
+  flex-direction: column;
 }
 
 h1 {
@@ -42,14 +50,13 @@ h2 {
 .filter-section,
 .dashboard-charts,
 .chart-box,
-.top10-sidebar,
+.top10-section,
 .meta-analysis {
   background: #fff;
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
-
 /* =========================
    Szűrők
 ========================= */
@@ -148,7 +155,7 @@ h2 {
 }
 
 .best-orange-block {
-  margin-top: 28px;
+  margin-bottom: 32px;
 }
 
 .best-orange-block h2 {
@@ -228,16 +235,13 @@ h2 {
 
 .dashboard-layout {
   display: grid;
-  grid-template-columns: 1fr 220px;
-  grid-template-areas:
-    "charts top10"
-    "analysis top10";
+  grid-template-columns: 1fr;
   gap: 24px;
   align-items: start;
+  flex: 1;
 }
 
 .dashboard-charts {
-  grid-area: charts;
   min-width: 0;
 }
 
@@ -245,10 +249,9 @@ h2 {
   margin-top: 0;
 }
 
-.top10-sidebar {
-  grid-area: top10;
+.top10-section {
+  min-width: 0;
 }
-
 .meta-analysis {
   grid-area: analysis;
 }
@@ -291,13 +294,20 @@ canvas {
 }
 
 #top10Cards {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 160px);
+  gap: 16px;
+  justify-content: start;
+}
+
+#top10Cards a {
+  display: block;
+  width: 160px;
 }
 
 #top10Cards .card-image {
-  width: 100%;
+  width: 160px;
+  max-width: 160px;
 }
 
 .empty-state {
@@ -387,26 +397,11 @@ canvas {
     line-height: 1.5;
   }
 
-  .dashboard-layout {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "charts"
-      "top10"
-      "analysis";
-  }
 
   .chart-box {
     height: 360px;
   }
 
-  .top10-sidebar {
-    position: static;
-  }
-
-  .top10-sidebar h2 {
-    margin-top: 0;
-    font-size: 18px;
-  }
 
   #top10Cards {
     display: grid;
@@ -570,3 +565,41 @@ canvas {
   }
 
 }
+
+/* =========================
+   Dobogós narancslapok
+========================= */
+
+.best-orange-card.rank-1 {
+  border: 3px solid #d4af37;
+  box-shadow:
+    0 0 0 1px #f4e3a3,
+    0 4px 16px rgba(212, 175, 55, 0.35);
+}
+
+.best-orange-card.rank-2 {
+  border: 3px solid #c0c0c0;
+  box-shadow:
+    0 0 0 1px #ececec,
+    0 4px 16px rgba(192, 192, 192, 0.35);
+}
+
+.best-orange-card.rank-3 {
+  border: 3px solid #cd7f32;
+  box-shadow:
+    0 0 0 1px #e8b589,
+    0 4px 16px rgba(205, 127, 50, 0.35);
+}
+
+.best-orange-card.rank-1 .rank-number {
+  color: #b8860b;
+}
+
+.best-orange-card.rank-2 .rank-number {
+  color: #808080;
+}
+
+.best-orange-card.rank-3 .rank-number {
+  color: #a85b15;
+}
+

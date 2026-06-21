@@ -70,62 +70,62 @@
     </div>
   </details>
 
-  <details class="collapsible-section orange-section">
+  <details class="collapsible-section orange-section" open>
     <summary>Narancslapok</summary>
     <section class="orange-section-inner">
 
-      <div class="charts">
-        <div class="chart-box">
-          <canvas id="orangeChart"></canvas>
-        </div>
+  <div class="best-orange-block">
+    <h2>Legjobb narancslapok</h2>
+    <p class="best-orange-note">
+      TOP20% alapján, holtversenyekkel együtt.
+    </p>
 
-        <div class="chart-box">
-          <canvas id="orangeTopChart"></canvas>
-        </div>
-      </div>
+    <div id="bestOrangeCards" class="best-orange-list"></div>
+  </div>
 
-      <div class="best-orange-block">
-  <h2>Legjobb narancslapok</h2>
-  <p class="best-orange-note">
-    TOP20% alapján, holtversenyekkel együtt.
-  </p>
+  <div class="charts">
+    <div class="chart-box">
+      <canvas id="orangeChart"></canvas>
+    </div>
 
-  <div id="bestOrangeCards" class="best-orange-list"></div>
-</div>
-    </section>
+    <div class="chart-box">
+      <canvas id="orangeTopChart"></canvas>
+    </div>
+  </div>
+
+</section>
   </details>
 
   <main class="dashboard-layout">
 
-    <details class="collapsible-section dashboard-charts">
-  <summary>Grafikonok</summary>
+  <details class="collapsible-section dashboard-charts" open>
+    <summary>Grafikonok</summary>
 
-  <div class="charts">
-    <div class="chart-box">
-      <canvas id="colorChart"></canvas>
+    <div class="charts">
+      <div class="chart-box">
+        <canvas id="colorChart"></canvas>
+      </div>
+
+      <div class="chart-box">
+        <canvas id="typeChart"></canvas>
+      </div>
+
+      <div class="chart-box">
+        <canvas id="functionChart"></canvas>
+      </div>
+
+      <div class="chart-box">
+        <canvas id="editionChart"></canvas>
+      </div>
     </div>
+  </details>
 
-    <div class="chart-box">
-      <canvas id="typeChart"></canvas>
-    </div>
+  <details class="collapsible-section top10-section" open>
+    <summary>TOP lapok</summary>
+    <div id="top10Cards"></div>
+  </details>
 
-    <div class="chart-box">
-      <canvas id="functionChart"></canvas>
-    </div>
-
-    <div class="chart-box">
-      <canvas id="editionChart"></canvas>
-    </div>
-  </div>
-</details>
-
-<details class="collapsible-section top10-sidebar">
-  <summary>TOP lapok</summary>
-  <div id="top10Cards"></div>
-</details>
-
-
-  </main>
+</main>
 
   <footer class="site-footer">
     <div class="footer-logo">HKK META</div>

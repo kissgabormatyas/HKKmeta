@@ -593,7 +593,7 @@ function renderBestOrangeCards(orangeCards) {
       const tieCount = getOrangeTieCount(card, bestCards);
 
       return `
-        <article class="best-orange-card ${tieCount > 1 ? "is-tie" : ""}">
+  <article class="best-orange-card rank-${rank} ${tieCount > 1 ? "is-tie" : ""}">
           <div class="best-orange-rank">
             <span class="rank-number">${rank}.</span>
           </div>
@@ -632,6 +632,8 @@ function createBarChart(canvasId, title, chartData, horizontal = false) {
     charts[canvasId].destroy();
   }
 
+  const isEditionChart = canvasId === "editionChart";
+
   charts[canvasId] = new Chart(ctx, {
     type: "bar",
     data: {
@@ -650,18 +652,31 @@ function createBarChart(canvasId, title, chartData, horizontal = false) {
       indexAxis: horizontal ? "y" : "x",
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          right: isEditionChart ? 42 : 10,
+          top: 8
+        }
+      },
       plugins: {
         title: {
           display: true,
-          text: title
+          text: title,
+          font: {
+            size: 14
+          }
         },
         datalabels: {
           display: chartData.total > 0,
           font: {
             size: 10
           },
+          color: "#2d1b0f",
           anchor: "end",
           align: "end",
+          offset: isEditionChart ? 4 : 2,
+          clamp: true,
+          clip: false,
           formatter: (value) => {
             if (!chartData.total) {
               return "";
@@ -682,7 +697,7 @@ function createBarChart(canvasId, title, chartData, horizontal = false) {
           ticks: {
             display: horizontal ? false : true,
             font: {
-              size: 8
+              size: 11
             }
           }
         },
@@ -692,8 +707,9 @@ function createBarChart(canvasId, title, chartData, horizontal = false) {
           },
           ticks: {
             display: horizontal ? true : false,
+            autoSkip: false,
             font: {
-              size: 8
+              size: window.innerWidth < 768 ? 8 : 11
             }
           }
         }
