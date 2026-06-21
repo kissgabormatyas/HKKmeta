@@ -9,7 +9,7 @@ const formats = {
   classic: {
     topcardsPath: "./data/topcards-classic.csv",
     orangeCardsPath: "./data/orange-classic.csv",
-    period: "2025.12.01 - 2026.05.31"
+    period: "2026.06.15 - 2026.06.21"
   },
   tm: {
     topcardsPath: "./data/topcards-tm.csv",
