@@ -643,16 +643,17 @@ canvas {
   .best-orange-images {
     justify-content: center;
     width: 100%;
+    gap: 10px;
   }
 
   .best-orange-images a {
-    width: 45%;
-    max-width: 110px;
+    width: auto;
+    max-width: none;
   }
 
   .best-orange-images .card-image {
-    width: 100%;
-    max-width: 110px;
+    width: 90px;
+    max-width: 90px;
   }
 }
 

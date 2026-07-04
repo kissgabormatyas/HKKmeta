@@ -9,12 +9,12 @@ const formats = {
   classic: {
     topcardsPath: "./data/topcards-classic.csv",
     orangeCardsPath: "./data/orange-classic.csv",
-    period: "2026.06.15 - 2026.06.28"
+    period: "2026.06.15 - 2026.07.04."
   },
   tm: {
     topcardsPath: "./data/topcards-tm.csv",
     orangeCardsPath: "./data/orange-tm.csv",
-    period: "2026.01.01 - 2026.06.18"
+    period: "2026.06.15 - 2026.07.04"
   }
 };
 
