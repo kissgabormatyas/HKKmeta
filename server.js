@@ -172,6 +172,36 @@ function getOrangeType(cardName, jsonCards) {
   return null;
 }
 
+function getOrangeParts(cardName, jsonCards) {
+  const matchedCards = findOrangeMatches(cardName, jsonCards);
+
+  const uniqueCards = [];
+
+  matchedCards.forEach((card) => {
+    if (!uniqueCards.some((item) => item.ID === card.ID)) {
+      uniqueCards.push(card);
+    }
+  });
+
+  const ruleCard = uniqueCards.find((card) => {
+    return card.type && card.type.some((type) =>
+      type.toLowerCase().includes("szabálylap")
+    );
+  });
+
+  const followerCard = uniqueCards.find((card) => {
+    return card.type && card.type.some((type) =>
+      type.toLowerCase().includes("követő")
+    );
+  });
+
+  if (ruleCard && followerCard) {
+    return [ruleCard, followerCard];
+  }
+
+  return uniqueCards.slice(0, 1);
+}
+
 function shouldKeepTopCard(card) {
   if (!card.type) {
     return true;
@@ -228,12 +258,21 @@ function buildOrangeCards(csvCards, jsonCards) {
   });
 
   csvCards.forEach((card) => {
-    const match = findJsonCard(jsonCards, card["Lap"]);
+    const orangeParts = getOrangeParts(card["Lap"], jsonCards);
 
-    if (match) {
-      card["ID"] = match.ID;
-      card["name"] = match.name;
-      card["link"] = match.link;
+    if (orangeParts.length > 0) {
+      card["ID"] = orangeParts[0].ID;
+      card["name"] = orangeParts[0].name;
+      card["link"] = orangeParts[0].link;
+
+      card["orangeParts"] = orangeParts.map((part) => {
+        return {
+          ID: part.ID,
+          name: part.name,
+          link: part.link,
+          type: part.type
+        };
+      });
     }
 
     card["orangeType"] = getOrangeType(card["Lap"], jsonCards);

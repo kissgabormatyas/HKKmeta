@@ -109,6 +109,10 @@ function isRenderableCard(card) {
   return card && card.ID && card.link && card.name;
 }
 
+function isRenderableOrangeCard(card) {
+  return isRenderableCard(card) || getArrayValue(card.orangeParts).length > 0;
+}
+
 function getSelectedCards(cards) {
   return cards.filter((card) => {
     const colors = getArrayValue(card.color);
@@ -519,8 +523,7 @@ function renderCards(containerId, cards) {
 function renderTop10Cards(cards, valueKey) {
   const top10Cards = cards
     .filter((card) => getCardValue(card, valueKey) > 0)
-    .sort((a, b) => getCardValue(b, valueKey) - getCardValue(a, valueKey))
-    .slice(0, 10);
+    .sort((a, b) => getCardValue(b, valueKey) - getCardValue(a, valueKey));
 
   renderCards("top10Cards", top10Cards);
 }
@@ -532,7 +535,7 @@ function renderTop10Cards(cards, valueKey) {
 
 function getBestOrangeCardsWithTies(orangeCards, limit = 10) {
   const validCards = orangeCards
-    .filter(isRenderableCard)
+    .filter(isRenderableOrangeCard)
     .filter((card) => getComparableTopValue(card) > 0)
     .sort((a, b) => getComparableTopValue(b) - getComparableTopValue(a));
 
@@ -593,21 +596,35 @@ function renderBestOrangeCards(orangeCards) {
       const tieCount = getOrangeTieCount(card, bestCards);
 
       return `
-  <article class="best-orange-card rank-${rank} ${tieCount > 1 ? "is-tie" : ""}">
+  <article class="best-orange-card ${card.orangeType === "Szabálylap + Követő" ? "is-orange-combo" : ""} rank-${rank} ${tieCount > 1 ? "is-tie" : ""}">
           <div class="best-orange-rank">
             <span class="rank-number">${rank}.</span>
           </div>
 
-          <a href="${getCardPageUrl(card)}" target="_blank" class="best-orange-image-link">
-            <img
-              src="${getCardImageUrl(card)}"
-              alt="${card.name}"
-              class="card-image"
-            >
-          </a>
+          <div class="best-orange-images">
+  ${(card.orangeParts && card.orangeParts.length > 0 ? card.orangeParts : [card])
+    .map((part) => {
+      return `
+        <a href="${getCardPageUrl(part)}" target="_blank" class="best-orange-image-link">
+          <img
+            src="${getCardImageUrl(part)}"
+            alt="${part.name}"
+            class="card-image"
+          >
+        </a>
+      `;
+    })
+    .join("")}
+</div>
 
           <div class="best-orange-info">
-            <div class="best-orange-name">${card.name}</div>
+           <div class="best-orange-name">
+  ${
+    card.orangeParts && card.orangeParts.length > 1
+      ? card.orangeParts.map((part) => `<div>${part.name}</div>`).join("")
+      : card.name
+  }
+</div>
             <div class="best-orange-type">${card.orangeType || "Narancslap"}</div>
           </div>
         </article>
