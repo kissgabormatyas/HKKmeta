@@ -289928,6 +289928,314 @@
     "flags": []
   },
   {
+    "ID": 12043,
+    "name": "Jég bogyola (2026)",
+    "text": "Blokkolás: 2. (P): létrejön a blokkolása. (P): rakj 2 dermesztésjelzőt célpont lapra! 1_VP, áldozd fel: húzz 1 lapot!",
+    "link": "jeg_bogyola_2026",
+    "type": [
+      "Tárgy",
+      "hideg"
+    ],
+    "color": [
+      "Rhatt",
+      "Leah"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12042,
+    "name": "Sólyomfőnix (2026)",
+    "text": "Semlegesítés: varázslat vagy _hideg lap. Ha nem semlegesítésként játszod ki, kapsz 1 Főnix fiókát.",
+    "link": "solyomfonix_2026",
+    "type": [
+      "Szörny",
+      "főnix",
+      "tűz",
+      "repül"
+    ],
+    "color": [
+      "Elenios",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12041,
+    "name": "Lánglovag",
+    "text": "(P): egy célpont sebződik 3-at. (K), semmizz ki 1 kalandozót vagy _tűz lapot: aktivizálódik. Ha a köröd végén aktív, húzz egy lapot!",
+    "link": "langlovag",
+    "type": [
+      "Kalandozó",
+      "ember",
+      "tűz",
+      "KF",
+      "repül",
+      "oltalom: 1"
+    ],
+    "color": [
+      "Dornodon",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12025,
+    "name": "Jégelementál (2026)",
+    "text": "_hideg-re immunis. Láthatatlan. Ha sebzést okoz: rakhatsz célpont lapra 2 dermesztésjelzőt.",
+    "link": "jegelemental_2026",
+    "type": [
+      "Szörny",
+      "elementál",
+      "repül",
+      "hideg",
+      "oltalom: 1"
+    ],
+    "color": [
+      "Leah",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12024,
+    "name": "Tűzgólem (2026)",
+    "text": "Ha _etnikum_etnikum, költsége 1_VP. Nem cserélhet gazdát. Ha feláldozod (akár költségnek is), kapsz 1_VP-t. (P), (1): dobd el a kezedben lévő lapokat a Semmibe, majd húzz 2 lapot, és Semmizés: 2.",
+    "link": "tuzgolem_2026",
+    "type": [
+      "Szörny",
+      "gólem",
+      "tűz",
+      "repül"
+    ],
+    "color": [
+      "Dornodon",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12023,
+    "name": "A pokol tornáca",
+    "text": "Ha ellenfeled sebződött a körben, költsége (1). (P), semmiz ki max. _etnikum lapot a gyűjtőkből: egy célpont sebződik annyit, amennyit semmiztél, és ha volt közte _tűz lap, kör végén húzz 1 lapot!",
+    "link": "a_pokol_tornaca",
+    "type": [
+      "Építmény",
+      "tűz",
+      "repül"
+    ],
+    "color": [
+      "Dornodon",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12022,
+    "name": "Lángkatlan",
+    "text": "Költségéből 1_VP-t helyettesíthetsz egy _tűz  lapod semmizésével vagy 2_VP-t egy lapod kézből Semmibe dobásával. Célpont lap a gyűjtőbe kerül, és egy másik célpont sebződik _etnikum-et (max. 4-et).",
+    "link": "langkatlan",
+    "type": [
+      "Azonnali",
+      "tűz",
+      "védekezés"
+    ],
+    "color": [
+      "Dornodon",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12021,
+    "name": "Tűzijáték (2026)",
+    "text": "Ha _etnikum_etnikum, költsége: 1_VP(1). Célpont nem lény lap a gyűjtőbe kerül, vagy egy célpont sebződik 4-et ÉS keress ki egy Tűzijátékot a paklidból, vagy húzz 1 lapot!",
+    "link": "tuzijatek_2026",
+    "type": [
+      "Azonnali",
+      "tűz",
+      "védekezés"
+    ],
+    "color": [
+      "Dornodon",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12020,
+    "name": "Olimpiai láng (2026)",
+    "text": "Ellenfeled eldob 1 véletlenszerű lapot, és ha az egy lény vagy építmény, akkor egy célpont sebződik 3-at.",
+    "link": "olimpiai_lang_2026",
+    "type": [
+      "Azonnali",
+      "tűz"
+    ],
+    "color": [
+      "Dornodon",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12019,
+    "name": "Éltető tűz (2026)",
+    "text": "A gyűjtődből egy max. 2-es, fix költségű asztalon maradó lapot a játékba rakhatsz, majd ellenfeled sebződik 3-at.",
+    "link": "elteto_tuz_2026",
+    "type": [
+      "Általános",
+      "tűz",
+      "oltalom: 0"
+    ],
+    "color": [
+      "Dornodon",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12018,
+    "name": "Pirofordítás (2026)",
+    "text": "Megakadályoz egy nem lény lapot vagy egy gyógyító forrást. Ha gyógyító forrást akadályoztál meg, egy célpont sebződik annyit, amennyit a forrás öszesen gyógyított volna (de max. 9-et).",
+    "link": "piroforditas_2026",
+    "type": [
+      "Azonnali",
+      "reakció",
+      "tűz",
+      "védekezés"
+    ],
+    "color": [
+      "Dornodon",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12017,
+    "name": "Sangin yeti (2026)",
+    "text": "Kijátszásakor rakj rá annyi +1/+1-es erőjelzőt, ahány tárgyad van játékban és a gyűjtődben! (S), (1): kapsz 1 Leah tókent. Halálsikoly: egy célpont sebződik annyit, amennyi a Sangin yeti max. ÉP-je.",
+    "link": "sangin_yeti_2026",
+    "type": [
+      "Szörny",
+      "yeti",
+      "repül",
+      "hideg"
+    ],
+    "color": [
+      "Leah",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12016,
+    "name": "Fagyhozó yeti",
+    "text": "(K), kijátszásakor és ha sebzést okoz, kapsz 1 Jégcsapot. (K): egy célpont sebződik annyit, ahány Jégcsapod van játékban.",
+    "link": "fagyhozo_yeti",
+    "type": [
+      "Szörny",
+      "yeti",
+      "repül",
+      "hideg"
+    ],
+    "color": [
+      "Leah",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12015,
+    "name": "Portyázó yeti",
+    "text": "Kijátszásakor egy célpont sebződik 3-at. (J), 1_VP vagy _etnikum: keress elő egy Portyázó yetit! Ha nem áldozástól a gyűjtőbe kerülne, ehelyett rakd a paklid aljára!",
+    "link": "portyazo_yeti",
+    "type": [
+      "Szörny",
+      "yeti",
+      "hideg"
+    ],
+    "color": [
+      "Leah",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12014,
+    "name": "Urgod kelyhe",
+    "text": "Költségéből a _*-t helyettesítheted 1_VP-vel. Minden _tűz forrásod +1-et sebez.  (P): egy célpont sebződik _etnikum-et (játékos max. 4-et).",
+    "link": "urgod_kelyhe",
+    "type": [
+      "Tárgy",
+      "tűz",
+      "ereklye"
+    ],
+    "color": [
+      "Dornodon",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      261
+    ],
+    "flags": []
+  },
+  {
     "ID": 12040,
     "name": "Reakcióelementál (2026)",
     "text": "Semlegesítés: lap. Hátrány: ha _védekezés, áldozd fel! Az előkészítő fázisodban rakj át 2 lényt a gyűjtődből a Semmibe, vagy _etnikum_etnikum ÉS 1_VP: vedd vissza a gyűjtődből a kezedbe (egy körben csak egyet)!",
