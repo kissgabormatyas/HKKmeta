@@ -9,12 +9,12 @@ const formats = {
   classic: {
     topcardsPath: "./data/topcards-classic.csv",
     orangeCardsPath: "./data/orange-classic.csv",
-    period: "2026.06.15 - 2026.07.19."
+    period: "2026.06.15 - 2026.07.26. Az első aki rámír kap egy FOIL ritkát."
   },
   tm: {
     topcardsPath: "./data/topcards-tm.csv",
     orangeCardsPath: "./data/orange-tm.csv",
-    period: "2026.06.15 - 2026.07.18."
+    period: "2026.06.15 - 2026.07.26."
   }
 };
 
@@ -62,14 +62,14 @@ function normalizeCardName(name) {
 }
 
 function prepareCsvCard(card) {
-  card["Alap összesen"] = getNumber(card["Alap összesen"]);
+  card["Főpakli összesen"] = getNumber(card["Főpakli összesen"]);
   card["Side összesen"] = getNumber(card["Side összesen"]);
-  card["Alap top%"] = getPercent(card["Alap top%"]);
+  card["Főpakli top%"] = getPercent(card["Főpakli top%"]);
 
-  card["SUM"] = card["Alap összesen"] + card["Side összesen"];
+  card["SUM"] = card["Főpakli összesen"] + card["Side összesen"];
 
   // Nem kerekítjük, hogy egyezzen az Excel-számolással
-  card["TOP"] = card["Alap összesen"] * card["Alap top%"];
+  card["TOP"] = card["Főpakli összesen"] * card["Főpakli top%"];
 
   card["rank"] = card[""];
   delete card[""];

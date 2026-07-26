@@ -58,7 +58,7 @@ const orangePalette = [
 ];
 
 const valueLabels = {
-  "Alap összesen": "Főpakli",
+  "Főpakli összesen": "Főpakli",
   "Side összesen": "Side",
   "TOP": "TOP20%",
   "SUM": "Összesen"
@@ -74,7 +74,7 @@ const charts = {};
 const filterState = {
   selectedColors: [],
   selectedFlag: "Összes",
-  valueKey: "Alap összesen"
+  valueKey: "Főpakli összesen"
 };
 
 let allCards = [];
@@ -853,7 +853,7 @@ function refreshDashboard() {
 // ======================================
 
 function updateOrangeCharts(orangeCards) {
-  const orangeCounts = getOrangeTypeCounts(orangeCards, "Alap összesen");
+  const orangeCounts = getOrangeTypeCounts(orangeCards, "Főpakli összesen");
   const orangeData = prepareChartData(orangeCounts, false, orangePalette);
 
   createPieChart(
