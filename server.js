@@ -9,7 +9,7 @@ const formats = {
   classic: {
     topcardsPath: "./data/topcards-classic.csv",
     orangeCardsPath: "./data/orange-classic.csv",
-    period: "2026.06.15 - 2026.07.26. Az első aki rámír kap egy FOIL ritkát."
+    period: "2026.06.15 - 2026.08.02."
   },
   tm: {
     topcardsPath: "./data/topcards-tm.csv",
@@ -17,6 +17,82 @@ const formats = {
     period: "2026.06.15 - 2026.07.26."
   }
 };
+
+const SUBTYPE_TYPES = [
+  "alakváltó",
+  "angyal",
+  "burástya",
+  "chara-din fattya",
+  "csontváz",
+  "cápa",
+  "dinó",
+  "elementál",
+  "elf",
+  "ember",
+  "fókuszkristály",
+  "főnix",
+  "ganüid",
+  "gnóm",
+  "goblin",
+  "gólem",
+  "hajó",
+  "hideg",
+  "kalóz",
+  "kobudera",
+  "krabber",
+  "kísértet",
+  "manó",
+  "minotaurusz",
+  "moa",
+  "morf",
+  "motyogó",
+  "mutáns",
+  "orgling",
+  "ork",
+  "pegazus",
+  "polip",
+  "pók",
+  "quwarg",
+  "reakció",
+  "sav",
+  "szirén",
+  "sárkány",
+  "teknős",
+  "termik",
+  "thargodan",
+  "triklem drakolder",
+  "troll",
+  "törpe",
+  "tűz",
+  "varkaudar",
+  "villám",
+  "vámpír",
+  "vízió",
+  "womath",
+  "xenó",
+  "yeti",
+  "árnymanó",
+  "éjfatty",
+  "óriás"
+
+];
+
+const ICON_TYPES = [
+  "ereklye",
+  "horgony",
+  "háló",
+  "köd",
+  "legendás",
+  "oltalom: 0",
+  "oltalom: 1",
+  "oltalom: 2",
+  "reakció drágítás",
+  "repül",
+  "védekezés",
+  "élőholt",
+  "ősmágia"
+
+];
 
 app.get("/api/format-info", (req, res) => {
   const format = getRequestedFormat(req);
@@ -104,6 +180,16 @@ function getRequestedFormat(req) {
   }
 
   return "classic";
+}
+
+function getMatchingTypes(cardTypes, allowedTypes) {
+  if (!Array.isArray(cardTypes)) {
+    return [];
+  }
+
+  return cardTypes.filter((type) => {
+    return allowedTypes.includes(type);
+  });
 }
 
 // ======================================
@@ -237,9 +323,20 @@ function buildTopCards(csvCards, jsonCards, editions) {
       card["link"] = match.link;
 
       card["type"] = match.type;
-      card["color"] = match.color;
-      card["edition"] = editions[editionId];
-      card["flag"] = match.flags || "Nincs";
+
+card["subtypes"] = getMatchingTypes(
+  match.type,
+  SUBTYPE_TYPES
+);
+
+card["icons"] = getMatchingTypes(
+  match.type,
+  ICON_TYPES
+);
+
+card["color"] = match.color;
+card["edition"] = editions[editionId];
+card["flag"] = match.flags || "Nincs";
     }
   });
 
@@ -313,8 +410,9 @@ async function loadAllData() {
     const jsonData = await readTextFile("./data/cards.json");
     const editionData = await readTextFile("./data/editions.json");
 
-    const jsonCards = JSON.parse(jsonData);
-    const editions = JSON.parse(editionData);
+const jsonCards = JSON.parse(jsonData);
+const editions = JSON.parse(editionData);
+
 
     await loadFormat("classic", jsonCards, editions);
     await loadFormat("tm", jsonCards, editions);

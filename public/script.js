@@ -1,13 +1,12 @@
 // ======================================
-// Chart.js plugin regisztrálása
+// HKK Meta – fekete/arany felület
 // ======================================
 
 Chart.register(ChartDataLabels);
 
-
-// ======================================
-// Színkódok
-// ======================================
+Chart.defaults.color = "#a9a18f";
+Chart.defaults.borderColor = "rgba(216, 180, 83, 0.10)";
+Chart.defaults.font.family = 'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
 const colorMap = {
   "Színtelen": "#F9ECE5",
@@ -18,43 +17,34 @@ const colorMap = {
   "Fairlight": "#FAEB48",
   "Sheran": "#395738",
   "Tharr": "#68150A",
-  "Leah": "#33100C",
+  "Leah": "#111111",
   "Dornodon": "#D73220",
   "Chara-din": "#662E82"
 };
 
-const dashboardPalette = [
-  "#4A2B11",
-  "#563114",
-  "#623817",
-  "#6E3F1A",
-  "#7A461D",
-  "#864D20",
-  "#925423",
-  "#9E5B26",
-  "#AA6229",
-  "#B6692C",
-  "#C27030",
-  "#C97A3C",
-  "#D08448",
-  "#D78E54",
-  "#DE9860",
-  "#E3A56F",
-  "#E8B27E",
-  "#EDBF8D",
-  "#F2CC9C",
-  "#F7D9AB",
-  "#F9E0B7",
-  "#FBE6C3",
-  "#FCECCF",
-  "#FEF2DB"
+const goldPalette = [
+  "#f2dc85",
+  "#e7c965",
+  "#d8b453",
+  "#c59a3a",
+  "#ad812b",
+  "#936820",
+  "#76501a",
+  "#5e3d15",
+  "#493011",
+  "#38260f",
+  "#c9b77e",
+  "#a8945b",
+  "#806f43",
+  "#655632",
+  "#4d432b"
 ];
 
 const orangePalette = [
-  "#8A5722", // bronz
-  "#C27030", // réz/arany
-  "#E8B27E", // világos arany
-  "#5B3514"  // mélybarna
+  "#f0d778",
+  "#d8b453",
+  "#ad812b",
+  "#76501a"
 ];
 
 const valueLabels = {
@@ -65,24 +55,25 @@ const valueLabels = {
 };
 
 
-// ======================================
-// Állapot
-// ======================================
 
 const charts = {};
 
-const filterState = {
-  selectedColors: [],
-  selectedFlag: "Összes",
-  valueKey: "Főpakli összesen"
+const state = {
+  currentFormat: "classic",
+  currentView: "orange",
+  orangeValueKey: "Főpakli összesen",
+  allCards: [],
+  orangeCards: [],
+  filter: {
+    selectedColors: [],
+    selectedFlag: "Összes",
+    selectedIcon: "Összes",
+    valueKey: "Főpakli összesen"
+  }
 };
 
-let allCards = [];
-let currentFormat = "classic";
-
-
 // ======================================
-// Segédfüggvények
+// Általános segédfüggvények
 // ======================================
 
 function getArrayValue(value) {
@@ -90,98 +81,232 @@ function getArrayValue(value) {
     return [];
   }
 
-  if (Array.isArray(value)) {
-    return value;
-  }
-
-  return [value];
+  return Array.isArray(value) ? value : [value];
 }
 
 function getCardValue(card, valueKey) {
-  return Number(card[valueKey]) || 0;
+  return Number(card?.[valueKey]) || 0;
 }
 
-function getComparableTopValue(card) {
-  return Number(getCardValue(card, "TOP").toFixed(2));
+function getRankingValue(card, valueKey) {
+  return Number(getCardValue(card, valueKey).toFixed(2));
+}
+
+function sumCardValues(cards, valueKey) {
+  return cards.reduce((sum, card) => sum + getCardValue(card, valueKey), 0);
+}
+
+function formatNumber(value) {
+  const number = Number(value) || 0;
+  const hasDecimals = Math.abs(number - Math.round(number)) > 0.001;
+
+  return new Intl.NumberFormat("hu-HU", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: hasDecimals ? 2 : 0
+  }).format(number);
+}
+
+function formatPercent(value, digits = 1) {
+  const number = Number.isFinite(value) ? value : 0;
+  return `${number.toFixed(digits).replace(".", ",")}%`;
+}
+
+function getShare(value, total) {
+  return total > 0 ? (value / total) * 100 : 0;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function isRenderableCard(card) {
-  return card && card.ID && card.link && card.name;
+  return Boolean(card && card.ID && card.link && card.name);
 }
 
 function isRenderableOrangeCard(card) {
-  return isRenderableCard(card) || getArrayValue(card.orangeParts).length > 0;
+  return isRenderableCard(card) || getArrayValue(card?.orangeParts).length > 0;
 }
 
-function getSelectedCards(cards) {
-  return cards.filter((card) => {
-    const colors = getArrayValue(card.color);
-    const flags = getArrayValue(card.flag);
+function getCardImageUrl(card) {
+  return `https://lapkereso.hkk.hu/HKKCardImage.php?cardID=${encodeURIComponent(card.ID)}`;
+}
 
-    const colorMatches =
-      filterState.selectedColors.length === 0 ||
-      filterState.selectedColors.some((selectedColor) => colors.includes(selectedColor));
+function getCardPageUrl(card) {
+  return `https://lapkereso.hkk.hu/lap/${encodeURIComponent(card.link)}/${encodeURIComponent(card.ID)}`;
+}
 
-    const flagMatches =
-      filterState.selectedFlag === "Összes" ||
-      flags.includes(filterState.selectedFlag);
+function setText(id, value) {
+  const element = document.getElementById(id);
 
-    return colorMatches && flagMatches;
+  if (element) {
+    element.textContent = value;
+  }
+}
+
+function destroyChart(canvasId) {
+  if (charts[canvasId]) {
+    charts[canvasId].destroy();
+    delete charts[canvasId];
+  }
+}
+
+function showError(containerId, message) {
+  const container = document.getElementById(containerId);
+
+  if (container) {
+    container.innerHTML = `<p class="error-state">${escapeHtml(message)}</p>`;
+  }
+}
+
+// ======================================
+// Fő nézetváltó és formátumválasztó
+// ======================================
+
+function setupViewNavigation() {
+  const buttons = document.querySelectorAll("[data-view]");
+  const panels = document.querySelectorAll("[data-view-panel]");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const selectedView = button.dataset.view;
+
+      if (!selectedView || selectedView === state.currentView) {
+        return;
+      }
+
+      state.currentView = selectedView;
+
+      buttons.forEach((item) => {
+        item.classList.toggle("active", item.dataset.view === selectedView);
+      });
+
+      panels.forEach((panel) => {
+        const isActive = panel.dataset.viewPanel === selectedView;
+        panel.hidden = !isActive;
+        panel.classList.toggle("active", isActive);
+      });
+
+      if (selectedView === "orange") {
+        refreshOrangeView();
+      } else {
+        refreshCardsView();
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
   });
 }
 
-function resetFilters() {
-  filterState.selectedColors = [];
-  filterState.selectedFlag = "Összes";
-
-  const flagSelect = document.getElementById("flagSelect");
-
-  if (flagSelect) {
-    flagSelect.value = "Összes";
-  }
-
-  updateColorFilterButtons();
-}
-
-
-// ======================================
-// Formátumváltó
-// ======================================
-
 function setupFormatSwitcher() {
   const buttons = document.querySelectorAll("[data-format]");
-
-  if (buttons.length === 0) {
-    return;
-  }
 
   buttons.forEach((button) => {
     button.addEventListener("click", () => {
       const selectedFormat = button.dataset.format;
 
-      if (!selectedFormat || selectedFormat === currentFormat) {
+      if (!selectedFormat || selectedFormat === state.currentFormat) {
         return;
       }
 
-      currentFormat = selectedFormat;
+      state.currentFormat = selectedFormat;
 
-      buttons.forEach((formatButton) => {
-        formatButton.classList.toggle(
-          "active",
-          formatButton.dataset.format === currentFormat
-        );
+      buttons.forEach((item) => {
+        item.classList.toggle("active", item.dataset.format === selectedFormat);
       });
 
-      resetFilters();
+      resetCardFilters();
       loadDashboardData();
     });
   });
 }
 
+function setupMetricSwitchers() {
+  document.querySelectorAll("[data-orange-value]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const valueKey = button.dataset.orangeValue;
+
+      if (!valueKey || valueKey === state.orangeValueKey) {
+        return;
+      }
+
+      state.orangeValueKey = valueKey;
+
+      document.querySelectorAll("[data-orange-value]").forEach((item) => {
+        item.classList.toggle("active", item.dataset.orangeValue === valueKey);
+      });
+
+      refreshOrangeView();
+    });
+  });
+
+  document.querySelectorAll("[data-card-value]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const valueKey = button.dataset.cardValue;
+
+      if (!valueKey || valueKey === state.filter.valueKey) {
+        return;
+      }
+
+      state.filter.valueKey = valueKey;
+
+      document.querySelectorAll("[data-card-value]").forEach((item) => {
+        item.classList.toggle("active", item.dataset.cardValue === valueKey);
+      });
+
+      refreshCardsView();
+    });
+  });
+}
 
 // ======================================
-// Szűrő UI
+// Normál lapok szűrői
 // ======================================
+
+function getSelectedCards(cards) {
+  return cards.filter((card) => {
+    const colors = getArrayValue(card.color);
+    const flags = getArrayValue(card.flag);
+    const icons = getArrayValue(card.icons);
+
+    const colorMatches =
+      state.filter.selectedColors.length === 0 ||
+      state.filter.selectedColors.some((selectedColor) => colors.includes(selectedColor));
+
+    const flagMatches =
+      state.filter.selectedFlag === "Összes" ||
+      flags.includes(state.filter.selectedFlag);
+
+    const iconMatches =
+      state.filter.selectedIcon === "Összes" ||
+      icons.includes(state.filter.selectedIcon);
+
+    return colorMatches && flagMatches && iconMatches;
+  });
+}
+
+function resetCardFilters() {
+  state.filter.selectedColors = [];
+  state.filter.selectedFlag = "Összes";
+  state.filter.selectedIcon = "Összes";
+
+  const flagSelect = document.getElementById("flagSelect");
+  const iconSelect = document.getElementById("iconSelect");
+
+  if (flagSelect) {
+    flagSelect.value = "Összes";
+  }
+
+  if (iconSelect) {
+    iconSelect.value = "Összes";
+  }
+
+  updateColorFilterButtons();
+}
 
 function renderColorFilters(cards) {
   const container = document.getElementById("colorFilters");
@@ -202,20 +327,16 @@ function renderColorFilters(cards) {
       title="Összes szín"
       aria-label="Összes szín"
     ></button>
-    ${colors
-      .map((color) => {
-        return `
-          <button
-            type="button"
-            class="color-filter-button"
-            data-color="${color}"
-            title="${color}"
-            aria-label="${color}"
-            style="--filter-color: ${colorMap[color]}"
-          ></button>
-        `;
-      })
-      .join("")}
+    ${colors.map((color) => `
+      <button
+        type="button"
+        class="color-filter-button"
+        data-color="${escapeHtml(color)}"
+        title="${escapeHtml(color)}"
+        aria-label="${escapeHtml(color)}"
+        style="--filter-color: ${colorMap[color]}"
+      ></button>
+    `).join("")}
   `;
 
   container.querySelectorAll(".color-filter-button").forEach((button) => {
@@ -223,40 +344,38 @@ function renderColorFilters(cards) {
       const color = button.dataset.color;
 
       if (!color) {
-        filterState.selectedColors = [];
-      } else if (filterState.selectedColors.includes(color)) {
-        filterState.selectedColors = filterState.selectedColors.filter((selectedColor) => {
-          return selectedColor !== color;
-        });
+        state.filter.selectedColors = [];
+      } else if (state.filter.selectedColors.includes(color)) {
+        state.filter.selectedColors = state.filter.selectedColors.filter((item) => item !== color);
       } else {
-        filterState.selectedColors.push(color);
+        state.filter.selectedColors.push(color);
       }
 
       updateColorFilterButtons();
-      refreshDashboard();
+      refreshCardsView();
     });
   });
+
+  updateColorFilterButtons();
 }
 
 function updateColorFilterButtons() {
-  const buttons = document.querySelectorAll(".color-filter-button");
-
-  buttons.forEach((button) => {
+  document.querySelectorAll(".color-filter-button").forEach((button) => {
     const color = button.dataset.color;
 
     if (!color) {
-      button.classList.toggle("active", filterState.selectedColors.length === 0);
+      button.classList.toggle("active", state.filter.selectedColors.length === 0);
       return;
     }
 
-    button.classList.toggle("active", filterState.selectedColors.includes(color));
+    button.classList.toggle("active", state.filter.selectedColors.includes(color));
   });
 }
 
 function renderFlagFilter(cards) {
-  const flagSelect = document.getElementById("flagSelect");
+  const select = document.getElementById("flagSelect");
 
-  if (!flagSelect) {
+  if (!select) {
     return;
   }
 
@@ -270,646 +389,592 @@ function renderFlagFilter(cards) {
     });
   });
 
-  const sortedFlags = Array.from(flags).sort((a, b) => {
-    return a.localeCompare(b, "hu");
-  });
+  const sortedFlags = Array.from(flags).sort((a, b) => a.localeCompare(b, "hu"));
 
-  flagSelect.innerHTML = `
+  select.innerHTML = `
     <option value="Összes">Összes</option>
-    ${sortedFlags
-      .map((flag) => `<option value="${flag}">${flag}</option>`)
-      .join("")}
+    ${sortedFlags.map((flag) => `<option value="${escapeHtml(flag)}">${escapeHtml(flag)}</option>`).join("")}
   `;
 
-  flagSelect.value = filterState.selectedFlag;
-
-  flagSelect.onchange = () => {
-    filterState.selectedFlag = flagSelect.value;
-    refreshDashboard();
+  select.value = state.filter.selectedFlag;
+  select.onchange = () => {
+    state.filter.selectedFlag = select.value;
+    refreshCardsView();
   };
 }
 
-function setupValueFilter() {
-  const valueSelect = document.getElementById("valueSelect");
+function renderIconFilter(cards) {
+  const select = document.getElementById("iconSelect");
 
-  if (!valueSelect) {
+  if (!select) {
     return;
   }
 
-  filterState.valueKey = valueSelect.value;
+  const icons = new Set();
 
-  valueSelect.onchange = () => {
-    filterState.valueKey = valueSelect.value;
-    refreshDashboard();
+  cards.forEach((card) => {
+    getArrayValue(card.icons).forEach((icon) => {
+      if (icon) {
+        icons.add(icon);
+      }
+    });
+  });
+
+  const sortedIcons = Array.from(icons).sort((a, b) => a.localeCompare(b, "hu"));
+
+  select.innerHTML = `
+    <option value="Összes">Összes</option>
+    ${sortedIcons.map((icon) => `<option value="${escapeHtml(icon)}">${escapeHtml(icon)}</option>`).join("")}
+  `;
+
+  select.value = state.filter.selectedIcon;
+  select.onchange = () => {
+    state.filter.selectedIcon = select.value;
+    refreshCardsView();
   };
 }
 
+// ======================================
+// Adatösszesítések
+// ======================================
 
-// ======================================
-// Adatok összesítése szín szerint
-// ======================================
+function addCount(target, key, value) {
+  if (!key || key === "Nincs" || value <= 0) {
+    return;
+  }
+
+  target[key] = (target[key] || 0) + value;
+}
 
 function getColorCounts(cards, valueKey) {
-  const colorCounts = {};
+  const counts = {};
 
   cards.forEach((card) => {
-    const colors = getArrayValue(card.color);
     const value = getCardValue(card, valueKey);
-
-    colors.forEach((color) => {
-      if (color === "Nincs") {
-        return;
-      }
-
-      if (colorCounts[color]) {
-        colorCounts[color] += value;
-      } else {
-        colorCounts[color] = value;
-      }
-    });
+    getArrayValue(card.color).forEach((color) => addCount(counts, color, value));
   });
 
-  return colorCounts;
+  return counts;
 }
-
-
-// ======================================
-// Adatok összesítése típus szerint
-// ======================================
 
 function getTypeCounts(cards, valueKey) {
-  const typeCounts = {};
+  const counts = {};
 
   cards.forEach((card) => {
-    const types = getArrayValue(card.type);
+    const firstType = getArrayValue(card.type)[0];
 
-    if (types.length === 0) {
+    if (firstType === "Követő") {
       return;
     }
 
-    const type = types[0];
-
-    if (type === "Követő") {
-      return;
-    }
-
-    const value = getCardValue(card, valueKey);
-
-    if (typeCounts[type]) {
-      typeCounts[type] += value;
-    } else {
-      typeCounts[type] = value;
-    }
+    addCount(counts, firstType, getCardValue(card, valueKey));
   });
 
-  return typeCounts;
+  return counts;
 }
-
-
-// ======================================
-// Adatok összesítése kiadás szerint
-// ======================================
 
 function getEditionCounts(cards, valueKey) {
-  const editionCounts = {};
+  const counts = {};
 
   cards.forEach((card) => {
-    if (!card.edition) {
-      return;
-    }
-
-    const edition = card.edition;
-    const value = getCardValue(card, valueKey);
-
-    if (editionCounts[edition]) {
-      editionCounts[edition] += value;
-    } else {
-      editionCounts[edition] = value;
-    }
+    addCount(counts, card.edition, getCardValue(card, valueKey));
   });
 
-  return editionCounts;
+  return counts;
 }
 
-
-// ======================================
-// Adatok összesítése funkció szerint
-// ======================================
-
-function getFlagCounts(cards, valueKey) {
-  const flagCounts = {};
+function getArrayPropertyCounts(cards, propertyName, valueKey) {
+  const counts = {};
 
   cards.forEach((card) => {
-    const flags = getArrayValue(card.flag);
     const value = getCardValue(card, valueKey);
-
-    flags.forEach((flag) => {
-      if (flag === "Nincs") {
-        return;
-      }
-
-      if (flagCounts[flag]) {
-        flagCounts[flag] += value;
-      } else {
-        flagCounts[flag] = value;
-      }
-    });
+    getArrayValue(card[propertyName]).forEach((item) => addCount(counts, item, value));
   });
 
-  return flagCounts;
+  return counts;
 }
 
+function getOrangeTypeCounts(cards, valueKey) {
+  const counts = {};
 
-// ======================================
-// Narancslapok összesítése típus szerint
-// ======================================
-
-function getOrangeTypeCounts(orangeCards, valueKey) {
-  const orangeTypeCounts = {};
-
-  orangeCards.forEach((card) => {
-    if (!card.orangeType) {
-      return;
-    }
-
-    const value = getCardValue(card, valueKey);
-
-    if (value === 0) {
-      return;
-    }
-
-    if (orangeTypeCounts[card.orangeType]) {
-      orangeTypeCounts[card.orangeType] += value;
-    } else {
-      orangeTypeCounts[card.orangeType] = value;
-    }
+  cards.forEach((card) => {
+    addCount(counts, card.orangeType, getCardValue(card, valueKey));
   });
 
-  return orangeTypeCounts;
+  return counts;
 }
 
+function prepareChartData(counts, palette = goldPalette, colorResolver = null) {
+  const entries = Object.entries(counts)
+    .filter(([, value]) => Number(value) > 0)
+    .sort((a, b) => b[1] - a[1]);
 
-// ======================================
-// Objektum rendezése és chart-adattá alakítása
-// ======================================
-
-function prepareChartData(counts, useColorMap = false, customPalette = null) {
-  const entries = Object.entries(counts).filter((entry) => Number(entry[1]) > 0);
-
-  entries.sort((a, b) => {
-    return b[1] - a[1];
-  });
-
-  const labels = entries.map((entry) => entry[0]);
-  const values = entries.map((entry) => entry[1]);
+  const labels = entries.map(([label]) => label);
+  const values = entries.map(([, value]) => value);
   const total = values.reduce((sum, value) => sum + value, 0);
+  const colors = labels.map((label, index) => {
+    if (colorResolver) {
+      return colorResolver(label, index);
+    }
 
-  const palette = customPalette || dashboardPalette;
+    return palette[index % palette.length];
+  });
 
-  const colors = useColorMap
-    ? labels.map((label) => colorMap[label] || "#B58A5A")
-    : labels.map((_, index) => palette[index % palette.length]);
-
-  return {
-    labels: labels,
-    values: values,
-    colors: colors,
-    total: total
-  };
+  return { labels, values, total, colors };
 }
-
 
 // ======================================
-// Képek
+// Chartok
 // ======================================
 
-function getCardImageUrl(card) {
-  return `https://lapkereso.hkk.hu/HKKCardImage.php?cardID=${card.ID}`;
+function getChartFontSize() {
+  return window.innerWidth < 580 ? 9 : 11;
 }
 
-function getCardPageUrl(card) {
-  return `https://lapkereso.hkk.hu/lap/${card.link}/${card.ID}`;
+function createBarChart(canvasId, chartData, horizontal = false) {
+  const canvas = document.getElementById(canvasId);
+
+  if (!canvas) {
+    return;
+  }
+
+  destroyChart(canvasId);
+
+  charts[canvasId] = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: chartData.labels,
+      datasets: [{
+        data: chartData.values,
+        backgroundColor: chartData.colors,
+        borderColor: chartData.values.map(() => "rgba(240, 215, 120, 0.92)"),
+        borderWidth: 1.6,
+        borderRadius: 5,
+        borderSkipped: false,
+        maxBarThickness: 46
+      }]
+    },
+    options: {
+      indexAxis: horizontal ? "y" : "x",
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 420
+      },
+      layout: {
+        padding: {
+          top: 20,
+          right: horizontal ? 50 : 12,
+          bottom: 4,
+          left: 4
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "#161510",
+          borderColor: "#5f4d1e",
+          borderWidth: 1,
+          titleColor: "#f6f1e4",
+          bodyColor: "#cbc1ab",
+          padding: 12,
+          callbacks: {
+            label: (context) => {
+              const value = Number(context.raw) || 0;
+              return `${formatNumber(value)} · ${formatPercent(getShare(value, chartData.total))}`;
+            }
+          }
+        },
+        datalabels: {
+          display: (context) => getShare(context.dataset.data[context.dataIndex], chartData.total) >= 2,
+          color: "#f0d778",
+          anchor: "end",
+          align: "end",
+          offset: 3,
+          clamp: true,
+          clip: false,
+          font: {
+            size: getChartFontSize(),
+            weight: "700"
+          },
+          formatter: (value) => formatPercent(getShare(value, chartData.total))
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          grid: {
+            display: horizontal,
+            color: "rgba(216, 180, 83, 0.07)"
+          },
+          border: { display: false },
+          ticks: {
+            display: horizontal ? false : true,
+            color: "#918977",
+            autoSkip: false,
+            maxRotation: window.innerWidth < 580 ? 45 : 25,
+            minRotation: 0,
+            font: { size: getChartFontSize() }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            display: !horizontal,
+            color: "rgba(216, 180, 83, 0.07)"
+          },
+          border: { display: false },
+          ticks: {
+            display: horizontal,
+            color: "#aaa18f",
+            autoSkip: false,
+            font: { size: getChartFontSize() }
+          }
+        }
+      }
+    }
+  });
 }
 
-function renderCards(containerId, cards) {
-  const container = document.getElementById(containerId);
+function createOrangeDoughnutChart(chartData) {
+  const canvasId = "orangeChart";
+  const canvas = document.getElementById(canvasId);
+
+  if (!canvas) {
+    return;
+  }
+
+  destroyChart(canvasId);
+
+  charts[canvasId] = new Chart(canvas, {
+    type: "doughnut",
+    data: {
+      labels: chartData.labels,
+      datasets: [{
+        data: chartData.values,
+        backgroundColor: chartData.colors,
+        borderColor: "#11110f",
+        borderWidth: 4,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "62%",
+      animation: { duration: 450 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "#161510",
+          borderColor: "#5f4d1e",
+          borderWidth: 1,
+          titleColor: "#f6f1e4",
+          bodyColor: "#cbc1ab",
+          padding: 12,
+          callbacks: {
+            label: (context) => {
+              const value = Number(context.raw) || 0;
+              return `${context.label}: ${formatNumber(value)} · ${formatPercent(getShare(value, chartData.total))}`;
+            }
+          }
+        },
+        datalabels: {
+          display: (context) => getShare(context.dataset.data[context.dataIndex], chartData.total) >= 5,
+          color: "#080807",
+          font: {
+            size: window.innerWidth < 580 ? 10 : 12,
+            weight: "900"
+          },
+          formatter: (value) => formatPercent(getShare(value, chartData.total), 0)
+        }
+      }
+    }
+  });
+}
+
+function renderOrangeLegend(chartData) {
+  const container = document.getElementById("orangeLegend");
 
   if (!container) {
     return;
   }
 
-  const renderableCards = cards.filter(isRenderableCard);
-
-  if (renderableCards.length === 0) {
-    container.innerHTML = `<p class="empty-state">Nincs megjeleníthető lap.</p>`;
+  if (chartData.labels.length === 0) {
+    container.innerHTML = `<p class="empty-state">Nincs megjeleníthető adat.</p>`;
     return;
   }
 
-  container.innerHTML = renderableCards
-    .map((card) => {
-      return `
-        <a href="${getCardPageUrl(card)}" target="_blank">
-          <img
-            src="${getCardImageUrl(card)}"
-            alt="${card.name}"
-            class="card-image"
-          >
-        </a>
-      `;
-    })
-    .join("");
+  container.innerHTML = chartData.labels.map((label, index) => {
+    const value = chartData.values[index];
+    const share = getShare(value, chartData.total);
+
+    return `
+      <div class="legend-item">
+        <span class="legend-swatch" style="background:${chartData.colors[index]}"></span>
+        <span class="legend-name">${escapeHtml(label)}</span>
+        <span class="legend-value">
+          ${formatNumber(value)}
+          <small>${formatPercent(share)}</small>
+        </span>
+      </div>
+    `;
+  }).join("");
 }
 
-function renderTop10Cards(cards, valueKey) {
-  const top10Cards = cards
-    .filter((card) => getCardValue(card, valueKey) > 0)
-    .sort((a, b) => getCardValue(b, valueKey) - getCardValue(a, valueKey));
-
-  renderCards("top10Cards", top10Cards);
-}
-
-
 // ======================================
-// Legjobb narancslapok holtversennyel
+// Rangsorok
 // ======================================
 
-function getBestOrangeCardsWithTies(orangeCards, limit = 10) {
-  const validCards = orangeCards
+function getRankedCardsWithTies(cards, valueKey, limit = 10) {
+  const validCards = cards
     .filter(isRenderableOrangeCard)
-    .filter((card) => getComparableTopValue(card) > 0)
-    .sort((a, b) => getComparableTopValue(b) - getComparableTopValue(a));
+    .filter((card) => getRankingValue(card, valueKey) > 0)
+    .sort((a, b) => getRankingValue(b, valueKey) - getRankingValue(a, valueKey));
 
-  const includedCards = [];
+  const rankedCards = [];
+  let previousValue = null;
+  let currentRank = 0;
 
-  for (const card of validCards) {
-    const value = getComparableTopValue(card);
+  validCards.forEach((card, index) => {
+    const value = getRankingValue(card, valueKey);
 
-    const betterCardCount = validCards.filter((otherCard) => {
-      return getComparableTopValue(otherCard) > value;
-    }).length;
-
-    const rank = betterCardCount + 1;
-
-    if (rank <= limit) {
-      includedCards.push(card);
+    if (value !== previousValue) {
+      currentRank = index + 1;
+      previousValue = value;
     }
-  }
 
-  return includedCards;
+    if (currentRank <= limit) {
+      rankedCards.push({ card, rank: currentRank, value });
+    }
+  });
+
+  return rankedCards;
 }
 
-function getOrangeRank(card, cards) {
-  const value = getComparableTopValue(card);
-
-  const betterCardCount = cards.filter((otherCard) => {
-    return getComparableTopValue(otherCard) > value;
-  }).length;
-
-  return betterCardCount + 1;
-}
-
-function getOrangeTieCount(card, cards) {
-  const value = getComparableTopValue(card);
-
-  return cards.filter((otherCard) => {
-    return getComparableTopValue(otherCard) === value;
-  }).length;
-}
-
-function renderBestOrangeCards(orangeCards) {
+function renderBestOrangeCards(cards) {
   const container = document.getElementById("bestOrangeCards");
 
   if (!container) {
     return;
   }
 
-  const bestCards = getBestOrangeCardsWithTies(orangeCards, 10);
+  const valueKey = state.orangeValueKey;
+  const rankedCards = getRankedCardsWithTies(cards, valueKey, 10);
+  const total = sumCardValues(cards.filter(isRenderableOrangeCard), valueKey);
 
-  if (bestCards.length === 0) {
-    container.innerHTML = `<p class="empty-state">Nincs megjeleníthető narancslap.</p>`;
+  if (rankedCards.length === 0) {
+    container.innerHTML = `<p class="empty-state">Nincs megjeleníthető narancslap ebben a formátumban.</p>`;
     return;
   }
 
-  container.innerHTML = bestCards
-    .map((card) => {
-      const rank = getOrangeRank(card, bestCards);
-      const tieCount = getOrangeTieCount(card, bestCards);
+  container.innerHTML = rankedCards.map(({ card, rank, value }) => {
+    const parts = getArrayValue(card.orangeParts).length > 0 ? card.orangeParts : [card];
+    const isCombo = card.orangeType === "Szabálylap + Követő" || parts.length > 1;
+    const names = parts.length > 1
+      ? parts.map((part) => `<div>${escapeHtml(part.name)}</div>`).join("")
+      : escapeHtml(card.name || card.Lap || "Narancslap");
 
-      return `
-  <article class="best-orange-card ${card.orangeType === "Szabálylap + Követő" ? "is-orange-combo" : ""} rank-${rank} ${tieCount > 1 ? "is-tie" : ""}">
-          <div class="best-orange-rank">
-            <span class="rank-number">${rank}.</span>
-          </div>
-
-          <div class="best-orange-images">
-  ${(card.orangeParts && card.orangeParts.length > 0 ? card.orangeParts : [card])
-    .map((part) => {
-      return `
-        <a href="${getCardPageUrl(part)}" target="_blank" class="best-orange-image-link">
-          <img
-            src="${getCardImageUrl(part)}"
-            alt="${part.name}"
-            class="card-image"
-          >
+    const images = parts
+      .filter(isRenderableCard)
+      .map((part) => `
+        <a href="${getCardPageUrl(part)}" target="_blank" rel="noopener noreferrer" class="best-orange-image-link">
+          <img src="${getCardImageUrl(part)}" alt="${escapeHtml(part.name)}" class="card-image" loading="lazy">
         </a>
-      `;
-    })
-    .join("")}
-</div>
+      `)
+      .join("");
 
-          <div class="best-orange-info">
-           <div class="best-orange-name">
-  ${
-    card.orangeParts && card.orangeParts.length > 1
-      ? card.orangeParts.map((part) => `<div>${part.name}</div>`).join("")
-      : card.name
-  }
-</div>
-            <div class="best-orange-type">${card.orangeType || "Narancslap"}</div>
+    return `
+      <article class="best-orange-card ${isCombo ? "is-orange-combo" : ""} rank-${rank}">
+        <div class="best-orange-rank">
+          <span class="rank-number">${rank}.</span>
+        </div>
+        <div class="best-orange-images">${images}</div>
+        <div class="best-orange-info">
+          <div class="best-orange-name">${names}</div>
+          <div class="best-orange-type">${escapeHtml(card.orangeType || "Narancslap")}</div>
+          <div class="card-stat-line">
+            <span class="card-stat-value">${formatNumber(value)}</span>
+            <span class="card-stat-share">${formatPercent(getShare(value, total))} az összesből</span>
           </div>
-        </article>
-      `;
-    })
-    .join("");
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
+function getRankedTopCards(cards, valueKey, limit = 100) {
+  const validCards = cards
+    .filter(isRenderableCard)
+    .filter((card) => getRankingValue(card, valueKey) > 0)
+    .sort((a, b) => getRankingValue(b, valueKey) - getRankingValue(a, valueKey));
 
-// ======================================
-// Oszlopdiagram / sávdiagram létrehozása
-// ======================================
+  const result = [];
+  let previousValue = null;
+  let currentRank = 0;
 
-function createBarChart(canvasId, title, chartData, horizontal = false) {
-  const ctx = document.getElementById(canvasId);
+  validCards.forEach((card, index) => {
+    const value = getRankingValue(card, valueKey);
 
-  if (!ctx) {
+    if (value !== previousValue) {
+      currentRank = index + 1;
+      previousValue = value;
+    }
+
+    if (currentRank <= limit) {
+      result.push({ card, rank: currentRank, value });
+    }
+  });
+
+  return result;
+}
+
+function renderTopCards(cards, valueKey) {
+  const container = document.getElementById("top10Cards");
+
+  if (!container) {
     return;
   }
 
-  if (charts[canvasId]) {
-    charts[canvasId].destroy();
-  }
+  const total = sumCardValues(cards, valueKey);
+  const rankedCards = getRankedTopCards(cards, valueKey, 100);
 
-  const isEditionChart = canvasId === "editionChart";
-
-  charts[canvasId] = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: chartData.labels,
-      datasets: [
-        {
-          label: title,
-          data: chartData.values,
-          backgroundColor: chartData.colors,
-          borderColor: "#3A220D",
-          borderWidth: 0.5
-        }
-      ]
-    },
-    options: {
-      indexAxis: horizontal ? "y" : "x",
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: {
-          right: isEditionChart ? 42 : 10,
-          top: 8
-        }
-      },
-      plugins: {
-        title: {
-          display: true,
-          text: title,
-          font: {
-            size: 14
-          }
-        },
-        datalabels: {
-          display: chartData.total > 0,
-          font: {
-            size: 10
-          },
-          color: "#2d1b0f",
-          anchor: "end",
-          align: "end",
-          offset: isEditionChart ? 4 : 2,
-          clamp: true,
-          clip: false,
-          formatter: (value) => {
-            if (!chartData.total) {
-              return "";
-            }
-
-            return ((value / chartData.total) * 100).toFixed(1) + "%";
-          }
-        },
-        legend: {
-          display: false
-        }
-      },
-      scales: {
-        x: {
-          grid: {
-            display: false
-          },
-          ticks: {
-            display: horizontal ? false : true,
-            font: {
-              size: 11
-            }
-          }
-        },
-        y: {
-          grid: {
-            display: false
-          },
-          ticks: {
-            display: horizontal ? true : false,
-            autoSkip: false,
-            font: {
-              size: window.innerWidth < 768 ? 8 : 11
-            }
-          }
-        }
-      }
-    }
-  });
-}
-
-
-// ======================================
-// Kördiagram létrehozása
-// ======================================
-
-function createPieChart(canvasId, title, chartData) {
-  const ctx = document.getElementById(canvasId);
-
-  if (!ctx) {
+  if (rankedCards.length === 0) {
+    container.innerHTML = `<p class="empty-state">Az aktív szűrőkkel nincs megjeleníthető lap.</p>`;
     return;
   }
 
-  if (charts[canvasId]) {
-    charts[canvasId].destroy();
-  }
-
-  charts[canvasId] = new Chart(ctx, {
-    type: "pie",
-    data: {
-      labels: chartData.labels,
-      datasets: [
-        {
-          label: title,
-          data: chartData.values,
-          backgroundColor: chartData.colors,
-          borderColor: "#ffffff",
-          borderWidth: 2
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        title: {
-          display: true,
-          text: title
-        },
-        datalabels: {
-          display: chartData.total > 0,
-          color: "#ffffff",
-          textStrokeColor: "#000000",
-          textStrokeWidth: 3,
-          formatter: (value) => {
-            if (!chartData.total) {
-              return "";
-            }
-
-            return ((value / chartData.total) * 100).toFixed(1) + "%";
-          }
-        },
-        legend: {
-          position: "bottom"
-        }
-      }
-    }
-  });
+  container.innerHTML = rankedCards.map(({ card, rank, value }) => `
+    <article class="top-card">
+      <span class="top-card-rank">${rank}.</span>
+      <a class="top-card-link" href="${getCardPageUrl(card)}" target="_blank" rel="noopener noreferrer">
+        <img src="${getCardImageUrl(card)}" alt="${escapeHtml(card.name)}" class="card-image" loading="lazy">
+        <div class="top-card-info">
+          <div class="top-card-name">${escapeHtml(card.name)}</div>
+          <div class="top-card-stats">
+            <span class="top-card-value">${formatNumber(value)}</span>
+            <span class="top-card-share">${formatPercent(getShare(value, total))}</span>
+          </div>
+        </div>
+      </a>
+    </article>
+  `).join("");
 }
 
-
 // ======================================
-// Összes normál chart frissítése
+// Narancslap nézet frissítése
 // ======================================
 
-function updateCharts(cards, valueKey) {
+function refreshOrangeView() {
+  const cards = state.orangeCards;
+  const valueKey = state.orangeValueKey;
   const valueLabel = valueLabels[valueKey] || valueKey;
+  const renderableCards = cards.filter(isRenderableOrangeCard);
+  const total = sumCardValues(renderableCards, valueKey);
+  setText("orangeChartHeading", `Narancslaptípusok – ${valueLabel}`);
+  setText("orangeChartMeta", `${formatNumber(total)} összérték`);
+  setText("orangeRankingTitle", `Leggyakoribb narancslapok – ${valueLabel}`);
 
-  const colorCounts = getColorCounts(cards, valueKey);
-  const colorData = prepareChartData(colorCounts, true);
+  const chartData = prepareChartData(getOrangeTypeCounts(cards, valueKey), orangePalette);
+  createOrangeDoughnutChart(chartData);
+  renderOrangeLegend(chartData);
+  renderBestOrangeCards(cards);
+}
 
+// ======================================
+// TOP100 nézet frissítése
+// ======================================
+
+function updateCardsCharts(cards, valueKey) {
   createBarChart(
     "colorChart",
-    `Színek szerinti eloszlás - ${valueLabel}`,
-    colorData
+    prepareChartData(
+      getColorCounts(cards, valueKey),
+      goldPalette,
+      (label) => colorMap[label] || goldPalette[0]
+    )
   );
-
-  const typeCounts = getTypeCounts(cards, valueKey);
-  const typeData = prepareChartData(typeCounts);
-
-  createBarChart(
-    "typeChart",
-    `Laptípus szerinti eloszlás - ${valueLabel}`,
-    typeData
-  );
-
-  const editionCounts = getEditionCounts(cards, valueKey);
-  const editionData = prepareChartData(editionCounts);
-
-  createBarChart(
-    "editionChart",
-    `Kiegészítő szerinti eloszlás - ${valueLabel}`,
-    editionData,
-    true
-  );
-
-  const flagCounts = getFlagCounts(cards, valueKey);
-  const flagData = prepareChartData(flagCounts);
-
-  createBarChart(
-    "functionChart",
-    `Funkció szerinti eloszlás - ${valueLabel}`,
-    flagData
-  );
-
-  renderTop10Cards(cards, valueKey);
+  createBarChart("typeChart", prepareChartData(getTypeCounts(cards, valueKey)));
+  createBarChart("functionChart", prepareChartData(getArrayPropertyCounts(cards, "flag", valueKey)));
+  createBarChart("subtypeChart", prepareChartData(getArrayPropertyCounts(cards, "subtypes", valueKey)), true);
+  createBarChart("iconChart", prepareChartData(getArrayPropertyCounts(cards, "icons", valueKey)));
+  createBarChart("editionChart", prepareChartData(getEditionCounts(cards, valueKey)), true);
 }
 
-function refreshDashboard() {
-  const filteredCards = getSelectedCards(allCards);
-  updateCharts(filteredCards, filterState.valueKey);
+function refreshCardsView() {
+  const filteredCards = getSelectedCards(state.allCards);
+  const valueKey = state.filter.valueKey;
+  const positiveCards = filteredCards.filter((card) => getCardValue(card, valueKey) > 0);
+  const total = sumCardValues(positiveCards, valueKey);
+  const valueLabel = valueLabels[valueKey] || valueKey;
+
+  setText("cardsResultCount", formatNumber(positiveCards.length));
+  setText("chartsMetricMeta", `${valueLabel} · ${formatNumber(total)} összérték`);
+  setText("topCardsTitle", `TOP100 lap – ${valueLabel}`);
+
+  updateCardsCharts(filteredCards, valueKey);
+  renderTopCards(filteredCards, valueKey);
 }
-
-
-// ======================================
-// Narancslap chartok frissítése
-// ======================================
-
-function updateOrangeCharts(orangeCards) {
-  const orangeCounts = getOrangeTypeCounts(orangeCards, "Főpakli összesen");
-  const orangeData = prepareChartData(orangeCounts, false, orangePalette);
-
-  createPieChart(
-    "orangeChart",
-    "Narancslapok eloszlása",
-    orangeData
-  );
-
-  const orangeTopCounts = getOrangeTypeCounts(orangeCards, "TOP");
-  const orangeTopData = prepareChartData(orangeTopCounts, false, orangePalette);
-  createPieChart(
-    "orangeTopChart",
-    "Narancslapok eloszlása TOP20%",
-    orangeTopData
-  );
-}
-
 
 // ======================================
 // Adatbetöltés
 // ======================================
 
-function loadDashboardData() {
-fetch(`/api/format-info?format=${currentFormat}`)
-  .then((response) => response.json())
-  .then((info) => {
-    const periodElement = document.getElementById("dataPeriod");
+async function fetchJson(url) {
+  const response = await fetch(url);
 
-    if (periodElement) {
-      periodElement.textContent = info.period;
-    }
-  });
+  if (!response.ok) {
+    throw new Error(`Sikertelen kérés: ${response.status}`);
+  }
 
-  fetch(`/api/cards?format=${currentFormat}`)
-    .then((response) => response.json())
-    .then((cards) => {
-      allCards = cards;
-
-      renderColorFilters(allCards);
-      renderFlagFilter(allCards);
-      refreshDashboard();
-    });
-
-  fetch(`/api/orange-cards?format=${currentFormat}`)
-    .then((response) => response.json())
-    .then((orangeCards) => {
-      updateOrangeCharts(orangeCards);
-      renderBestOrangeCards(orangeCards);
-    });
+  return response.json();
 }
 
+async function loadDashboardData() {
+  setText("dataPeriod", "Betöltés…");
+
+  try {
+    const [formatInfo, cards, orangeCards] = await Promise.all([
+      fetchJson(`/api/format-info?format=${state.currentFormat}`),
+      fetchJson(`/api/cards?format=${state.currentFormat}`),
+      fetchJson(`/api/orange-cards?format=${state.currentFormat}`)
+    ]);
+
+    state.allCards = Array.isArray(cards) ? cards : [];
+    state.orangeCards = Array.isArray(orangeCards) ? orangeCards : [];
+
+    setText("dataPeriod", formatInfo.period || "Nincs megadva");
+
+    renderColorFilters(state.allCards);
+    renderFlagFilter(state.allCards);
+    renderIconFilter(state.allCards);
+
+    if (state.currentView === "orange") {
+      refreshOrangeView();
+    } else {
+      refreshCardsView();
+    }
+  } catch (error) {
+    console.error("Adatbetöltési hiba:", error);
+    setText("dataPeriod", "Az adatok nem tölthetők be");
+    showError("bestOrangeCards", "Az adatok betöltése sikertelen. Ellenőrizd a szervert és az API-végpontokat.");
+    showError("top10Cards", "Az adatok betöltése sikertelen. Ellenőrizd a szervert és az API-végpontokat.");
+  }
+}
 
 // ======================================
-// Fő program
+// Indítás
 // ======================================
 
-setupValueFilter();
+setupViewNavigation();
 setupFormatSwitcher();
+setupMetricSwitchers();
 loadDashboardData();
+
+let resizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    Object.values(charts).forEach((chart) => chart.resize());
+  }, 120);
+});

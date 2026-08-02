@@ -2,141 +2,251 @@
 <html lang="hu">
 <head>
   <meta property="og:title" content="HKK Meta">
-<meta property="og:description" content="HKK paklistatisztikák, metaelemzés, narancslapok, TOP lapok és grafikonok.">
-<meta property="og:image" content="https://hkkmeta.hu/og-image.png">
-<meta property="og:url" content="https://hkkmeta.hu">
-<meta property="og:type" content="website">
-<meta property="og:locale" content="hu_HU">
+  <meta property="og:description" content="HKK paklistatisztikák, metaelemzés, narancslapok, TOP100 lapok és grafikonok.">
+  <meta property="og:image" content="https://hkkmeta.hu/og-image.png">
+  <meta property="og:url" content="https://hkkmeta.hu">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="hu_HU">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="HKK Meta">
-<meta name="twitter:description" content="HKK paklistatisztikák és metaelemzés.">
-<meta name="twitter:image" content="https://hkkmeta.hu/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HKK Meta">
+  <meta name="twitter:description" content="HKK paklistatisztikák és metaelemzés.">
+  <meta name="twitter:image" content="https://hkkmeta.hu/og-image.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090908">
   <title>HKK Meta</title>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NVEWVX1G75"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-NVEWVX1G75');
-</script>
-  <link rel="icon" type="image/png" href="./favicon.png">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NVEWVX1G75"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NVEWVX1G75');
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
+  <header class="app-header">
+    <a class="brand" href="#" aria-label="HKK Meta kezdőlap">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" role="presentation" focusable="false">
+          <defs>
+            <linearGradient id="brandIconGold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f4df8b" />
+              <stop offset="55%" stop-color="#d8b453" />
+              <stop offset="100%" stop-color="#9a7425" />
+            </linearGradient>
+          </defs>
+          <rect x="8" y="34" width="8" height="14" rx="2"></rect>
+          <rect x="22" y="26" width="8" height="22" rx="2"></rect>
+          <rect x="36" y="18" width="8" height="30" rx="2"></rect>
+          <rect x="50" y="12" width="8" height="36" rx="2"></rect>
+          <path d="M11 22 L22 22 L30 16 L40 21 L52 11" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          <circle cx="11" cy="22" r="2.6" fill="#0a0906"></circle>
+          <circle cx="22" cy="22" r="2.6" fill="#0a0906"></circle>
+          <circle cx="30" cy="16" r="2.6" fill="#0a0906"></circle>
+          <circle cx="40" cy="21" r="2.6" fill="#0a0906"></circle>
+          <circle cx="52" cy="11" r="2.6" fill="#0a0906"></circle>
+        </svg>
+      </span>
+      <span class="brand-copy">
+        <strong>HKK META</strong>
+      </span>
+    </a>
 
-  <h1>HKK Meta</h1>
-  <p class="data-period">
-  Adatok:
-  <strong id="dataPeriod"></strong>
-</p>
-
-<div class="format-switcher">
-  <button
-    type="button"
-    class="format-button active"
-    data-format="classic"
-  >
-    Hagyományos
-  </button>
-
-  <button
-    type="button"
-    class="format-button"
-    data-format="tm"
-  >
-    Tiltott Mágia
-  </button>
-</div>
-
-  <details class="collapsible-section filter-section" open>
-    <summary>Szűrők</summary>
-
-    <div class="filter-content">
-      <div class="filter-group">
-        <div class="filter-title">Szín</div>
-        <div id="colorFilters" class="color-filter-list"></div>
-      </div>
-
-      <div class="filter-group">
-        <label class="filter-title" for="flagSelect">Funkció</label>
-        <select id="flagSelect">
-          <option value="Összes">Összes</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label class="filter-title" for="valueSelect">Megjelenítés</label>
-        <select id="valueSelect">
-          <option value="Főpakli összesen">Főpakli</option>
-          <option value="Side összesen">Side</option>
-          <option value="TOP">TOP20%</option>
-          <option value="SUM">Összesen</option>
-        </select>
-      </div>
-    </div>
-  </details>
-
-  <details class="collapsible-section orange-section" open>
-    <summary>Narancslapok</summary>
-    <section class="orange-section-inner">
-
-  <div class="best-orange-block">
-    <h2>Legjobb narancslapok</h2>
-    <p class="best-orange-note">
-      TOP20% alapján, holtversenyekkel együtt.
-    </p>
-
-    <div id="bestOrangeCards" class="best-orange-list"></div>
-  </div>
-
-  <div class="charts">
-    <div class="chart-box">
-      <canvas id="orangeChart"></canvas>
+    <div class="format-switcher" role="group" aria-label="Formátum választása">
+      <button type="button" class="format-button active" data-format="classic">
+        Hagyományos
+      </button>
+      <button type="button" class="format-button" data-format="tm">
+        Tiltott Mágia
+      </button>
     </div>
 
-    <div class="chart-box">
-      <canvas id="orangeTopChart"></canvas>
+    <div class="period-block">
+      <span>Statisztikai időszak</span>
+      <strong id="dataPeriod">Betöltés…</strong>
     </div>
-  </div>
+  </header>
 
-</section>
-  </details>
+  <main class="app-main">
+    <section id="orangeView" class="view-panel active" data-view-panel="orange">
+      <div class="page-heading orange-page-heading">
+        <div>
+          <span class="eyebrow">Meta Snapshot</span>
+          <h1>Narancslapok</h1>
+          <p>Követők és szabálylapok statisztikái</p>
+        </div>
 
-  <main class="dashboard-layout">
-
-  <details class="collapsible-section dashboard-charts">
-    <summary>Grafikonok</summary>
-
-    <div class="charts">
-      <div class="chart-box">
-        <canvas id="colorChart"></canvas>
+        <div class="segmented-control" role="group" aria-label="Narancslap mérőszám">
+          <button type="button" class="segment-button active" data-orange-value="Főpakli összesen">
+            Összesen
+          </button>
+          <button type="button" class="segment-button" data-orange-value="TOP">
+            TOP20%
+          </button>
+        </div>
       </div>
 
-      <div class="chart-box">
-        <canvas id="typeChart"></canvas>
+      <section class="content-panel chart-panel">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Eloszlás</span>
+            <h2 id="orangeChartHeading">Narancslaptípusok</h2>
+          </div>
+          <span id="orangeChartMeta" class="section-meta"></span>
+        </div>
+        <div class="orange-chart-layout">
+          <div class="chart-box chart-box-donut">
+            <canvas id="orangeChart"></canvas>
+          </div>
+          <div id="orangeLegend" class="custom-legend"></div>
+        </div>
+      </section>
+
+      <section class="content-panel ranking-panel">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Rangsor</span>
+            <h2 id="orangeRankingTitle">Leggyakoribb narancslap kombinációk</h2>
+          </div>
+          <span class="section-meta">TOP 10, holtversenyekkel</span>
+        </div>
+        <div id="bestOrangeCards" class="best-orange-list"></div>
+      </section>
+    </section>
+
+    <section id="cardsView" class="view-panel" data-view-panel="cards" hidden>
+      <div class="page-heading">
+        <div>
+          <span class="eyebrow">Leggyakrabban játszott lapok</span>
+          <h1>TOP100</h1>
+          <p>A leggyakoribb 100 lap statisztikái.</p>
+        </div>
       </div>
 
-      <div class="chart-box">
-        <canvas id="functionChart"></canvas>
-      </div>
+      <section class="control-panel filter-panel">
+        <div class="control-heading">
+          <div>
+            <span class="control-kicker">Szűrők</span>
+            <h2>Funkció és színszűrők</h2>
+          </div>
+        </div>
 
-      <div class="chart-box">
-        <canvas id="editionChart"></canvas>
-      </div>
-    </div>
-  </details>
+        <div class="filter-content">
+          <div class="filter-group filter-colors">
+            <div class="filter-title">Szín</div>
+            <div id="colorFilters" class="color-filter-list"></div>
+          </div>
 
-  <details class="collapsible-section top10-section" open>
-    <summary>TOP lapok</summary>
-    <div id="top10Cards"></div>
-  </details>
+          <div class="filter-group">
+            <label class="filter-title" for="flagSelect">Funkció</label>
+            <select id="flagSelect">
+              <option value="Összes">Összes</option>
+            </select>
+          </div>
 
-</main>
+          <div class="filter-group">
+            <label class="filter-title" for="iconSelect">Ikon</label>
+            <select id="iconSelect">
+              <option value="Összes">Összes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="metric-row">
+          <span class="filter-title">Megjelenítés</span>
+          <div class="segmented-control cards-metric-control" role="group" aria-label="Lapok mérőszáma">
+            <button type="button" class="segment-button active" data-card-value="Főpakli összesen">Főpakli</button>
+            <button type="button" class="segment-button" data-card-value="Side összesen">Side</button>
+            <button type="button" class="segment-button" data-card-value="SUM">Összesen</button>
+            <button type="button" class="segment-button" data-card-value="TOP">TOP20%</button>
+          </div>
+        </div>
+
+        <div class="summary-grid summary-grid-single">
+          <article class="summary-card">
+            <span>Találatok száma</span>
+            <strong id="cardsResultCount">–</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-panel dashboard-charts">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Meta elemzés</span>
+            <h2>Grafikonok</h2>
+          </div>
+          <span id="chartsMetricMeta" class="section-meta"></span>
+        </div>
+
+        <div class="charts">
+          <article class="chart-card">
+            <h3>Színek</h3>
+            <div class="chart-box"><canvas id="colorChart"></canvas></div>
+          </article>
+          <article class="chart-card">
+            <h3>Laptípusok</h3>
+            <div class="chart-box"><canvas id="typeChart"></canvas></div>
+          </article>
+          <article class="chart-card">
+            <h3>Funkciók</h3>
+            <div class="chart-box"><canvas id="functionChart"></canvas></div>
+          </article>
+          <article class="chart-card">
+            <h3>Altípusok</h3>
+            <div class="chart-box chart-box-tall"><canvas id="subtypeChart"></canvas></div>
+          </article>
+          <article class="chart-card">
+            <h3>Ikonok</h3>
+            <div class="chart-box"><canvas id="iconChart"></canvas></div>
+          </article>
+          <article class="chart-card">
+            <h3>Kiegészítők</h3>
+            <div class="chart-box chart-box-tall"><canvas id="editionChart"></canvas></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-panel top100-section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Rangsor</span>
+            <h2 id="topCardsTitle">TOP100 lap</h2>
+          </div>
+          <span class="section-meta">Az aktív szűrők alapján</span>
+        </div>
+        <div id="top10Cards" class="top-cards-grid"></div>
+      </section>
+    </section>
+  </main>
+
+  <nav class="bottom-navigation" aria-label="Fő navigáció">
+    <button type="button" class="nav-button active" data-view="orange" aria-controls="orangeView">
+      <svg viewBox="0 0 48 36" aria-hidden="true">
+        <rect x="4" y="8" width="20" height="26" rx="3"></rect>
+        <rect x="14" y="3" width="20" height="26" rx="3"></rect>
+        <rect x="24" y="8" width="20" height="26" rx="3"></rect>
+      </svg>
+      <span>Narancslapok</span>
+    </button>
+
+    <button type="button" class="nav-button" data-view="cards" aria-controls="cardsView">
+      <svg viewBox="0 0 54 36" aria-hidden="true">
+        <rect x="2" y="10" width="16" height="22" rx="2"></rect>
+        <rect x="11" y="5" width="16" height="22" rx="2"></rect>
+        <rect x="20" y="2" width="16" height="22" rx="2"></rect>
+        <rect x="29" y="5" width="16" height="22" rx="2"></rect>
+        <rect x="38" y="10" width="14" height="22" rx="2"></rect>
+      </svg>
+      <span>TOP100</span>
+    </button>
+  </nav>
 
   <footer class="site-footer">
     <div class="footer-logo">HKK META</div>
@@ -146,6 +256,5 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
   <script src="./script.js" charset="UTF-8"></script>
-
 </body>
 </html>
