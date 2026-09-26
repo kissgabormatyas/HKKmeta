@@ -33598,6 +33598,26 @@
     "flags": []
   },
   {
+    "ID": 12079,
+    "name": "Chara-din fattya (2000)",
+    "text": "",
+    "link": "chara-din_fattya_2000",
+    "type": [
+      "Szörny",
+      "-"
+    ],
+    "color": [
+      "Chara-din",
+      "Nincs"
+    ],
+    "commonness": "common",
+    "editions": [
+      6,
+      9
+    ],
+    "flags": []
+  },
+  {
     "ID": 3812,
     "name": "A sokaság ereje",
     "text": "Minden előkészítő fázisodban jelzőket kapsz. Ha öt vagy hat lényed van, egy jelzőt kapsz, ha hét vagy nyolc lényed, két jelzőt, és így tovább. Ha ötnél kevesebb lényed van, nem kapsz jelzőt. Ezeket a jelzőket oszd szét a lényeid között; egy lényre többet is tehetsz. Minden jelző +1 sebzést jelent, és a következő előkészítő fázisodig marad a lényen. Ha nincs A sokaság ereje bűbájod a játékban, a jelzők azonnal leesnek. \r",
@@ -45952,6 +45972,26 @@
     "commonness": "common",
     "editions": [
       8
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12079,
+    "name": "Chara-din fattya (2000)",
+    "text": "",
+    "link": "chara-din_fattya_2000",
+    "type": [
+      "Szörny",
+      "-"
+    ],
+    "color": [
+      "Chara-din",
+      "Nincs"
+    ],
+    "commonness": "common",
+    "editions": [
+      6,
+      9
     ],
     "flags": []
   },
@@ -179029,6 +179069,25 @@
     "flags": []
   },
   {
+    "ID": 11516,
+    "name": "Zsákbamacska (2023)",
+    "text": "Ezt a Zsákbamacskát a Beholder találkozókon és a Beholder által rendezett HKK versenyeken válthatod be válogatott HKK lapokra, a készlet erejéig. A legértékesebb lapokhoz több Zsákbamacska is szükséges lehet!",
+    "link": "zsakbamacska_2023",
+    "type": [
+      "Szörny",
+      "repül"
+    ],
+    "color": [
+      "Elenios",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      168
+    ],
+    "flags": []
+  },
+  {
     "ID": 10629,
     "name": "Káoszhullám (2023)",
     "text": "Költségéből minden egyes VP-t helyettesíthetsz 1-1 jelző levételével lapokról. Húzz 1 lapot! Ellenfeled eldob 2 véletlenszerű lapot, vagy kapsz 3 Chara-din tókent.",
@@ -254539,6 +254598,26 @@
     ]
   },
   {
+    "ID": 12080,
+    "name": "Szökőkút (2024)",
+    "text": "(P): célpont lény vagy játékos gyógyul 3 ÉP-t és célpont gyűjtőből rakj max. 2 lapot a Semmibe. (K), mutasd meg ezt a lapot a kezedből: egy gyűjtőből 1 lapot a Semmibe rakhatsz.",
+    "link": "szokokut_2024",
+    "type": [
+      "Építmény",
+      "ősmágia",
+      "repül"
+    ],
+    "color": [
+      "Színtelen",
+      "Nincs"
+    ],
+    "commonness": "common",
+    "editions": [
+      237
+    ],
+    "flags": []
+  },
+  {
     "ID": 10891,
     "name": "Unikális morf",
     "text": "Újrahasznosítás: 1. (J): keress elő az Unikális morffal megegyező színű varázslatot! Ha ezt a varázslatot sikeresen kijátszod ebben a körben, a kör végén előkereshetsz egy Unikális morfot.",
@@ -273968,6 +274047,7 @@
       "Szörny",
       "quwarg",
       "tűz",
+      "repül",
       "villám"
     ],
     "color": [
@@ -286333,7 +286413,9 @@
     "editions": [
       264
     ],
-    "flags": []
+    "flags": [
+      "reakció"
+    ]
   },
   {
     "ID": 12077,
@@ -286572,7 +286654,10 @@
     "editions": [
       264
     ],
-    "flags": []
+    "flags": [
+      "húzás",
+      "sebzés"
+    ]
   },
   {
     "ID": 12055,
@@ -286658,7 +286743,9 @@
     "editions": [
       264
     ],
-    "flags": []
+    "flags": [
+      "reakció"
+    ]
   },
   {
     "ID": 11434,
@@ -289928,6 +290015,300 @@
     "flags": []
   },
   {
+    "ID": 12046,
+    "name": "Törpe roham",
+    "text": "Kijátszhatod 3_VP-ért is, ekkor [[1]] és vegyél vissza a gyűjtődből egy _KF tárgyat! Kapsz 3 Mokány törpét, és ellenfeled következő varázslata nem jön létre. Kijátszása után a Semmibe kerül.",
+    "link": "torpe_roham",
+    "type": [
+      "Általános",
+      "-"
+    ],
+    "color": [
+      "Tharr",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12045,
+    "name": "Komposztálás (2026)",
+    "text": "Célpont lap a gyűjtőbe kerül, és ha nem _védekezés, kapsz egy Varázstök, Varázsborsó, Varázsdinnye, Varázsgomba vagy Varázskrumpli lapot a kezedbe.",
+    "link": "komposztalas_2026",
+    "type": [
+      "Azonnali",
+      "védekezés"
+    ],
+    "color": [
+      "Sheran",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12044,
+    "name": "Varázskert (2026)",
+    "text": "(S), [1]: kapsz egy Varázstök, Varázsborsó, Varázsdinnye, Varázsgomba vagy Varázskrumpli lapot a kezedbe.",
+    "link": "varazskert_2026",
+    "type": [
+      "Építmény",
+      "háló",
+      "repül"
+    ],
+    "color": [
+      "Sheran",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12037,
+    "name": "Penészedés",
+    "text": "Minden, legalább 4-es alap ÉP-jű lény a gyűjtőbe kerül, vagy ellenfeled eldob 2 véletlenszerű lapot.",
+    "link": "peneszedes",
+    "type": [
+      "Azonnali",
+      "életkioltó"
+    ],
+    "color": [
+      "Chara-din",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12036,
+    "name": "Mokány törpe",
+    "text": "Ha van rajta tárgy, +1/+1-et kap.",
+    "link": "mokany_torpe",
+    "type": [
+      "Kalandozó",
+      "törpe",
+      "KF",
+      "repül"
+    ],
+    "color": [
+      "Tharr",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12035,
+    "name": "Törpe sör (2026)",
+    "text": "Ha van játékban törpéd, ingyen kijátszhatod. (P): célpont lény kap 2 álomjelzőt. 2_VP, áldozd fel: keress elő egy max. 2-es, fix költségű törpét, és rakd játékba!",
+    "link": "torpe_sor_2026",
+    "type": [
+      "Tárgy",
+      "törpe"
+    ],
+    "color": [
+      "Tharr",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12034,
+    "name": "Hét törpe (2026)",
+    "text": "Kompenzáció és halálsikoly: kapsz a kezedbe 1 Törpe sört.  Kijátszásakor és minden előkészítő fázisodban kapsz egy Mokány törpét. Ha legalább 7 törpéd van játékban, azonnal megnyerted a játékot.",
+    "link": "het_torpe_2026",
+    "type": [
+      "Bűbáj",
+      "törpe"
+    ],
+    "color": [
+      "Tharr",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12033,
+    "name": "Varázspálinka",
+    "text": "Költségéből 1 _*-t helyettesíthetsz 2 ÉP feláldozásával. Áldozd fel: aktivizálj egy célpont lapot. Jelenés: kör végén kapsz 1_VP-t.",
+    "link": "varazspalinka",
+    "type": [
+      "Tárgy",
+      "ereklye"
+    ],
+    "color": [
+      "Tharr",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12032,
+    "name": "Párlatkészítés",
+    "text": "Költségéből annyi VP-t helyettesíthetsz 2-2 ÉP feláldozásával, ahány legalább 4-es költségű lapot mutatsz a kezedből és gyűjtődből. Ellenfeled minden lapja a gyűjtőbe kerül, és kapsz annyi Varázspálinka lapot, ahány lap így gyűjtőbe került.",
+    "link": "parlatkeszites",
+    "type": [
+      "Azonnali",
+      "reakció drágítás"
+    ],
+    "color": [
+      "Tharr",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12031,
+    "name": "Varázskrumpli (2026)",
+    "text": "Dobd a kezedből a Semmibe: célpont játékos kap vagy veszít 1_VP-t (csak az ellenfél 2. körétől). Élet: 7. (K), vegyél le róla 3 életjelzőt: célpont játékos kap vagy veszít 2_VP-t.",
+    "link": "varazskrumpli_2026",
+    "type": [
+      "Szörny",
+      "repül",
+      "reakció drágítás"
+    ],
+    "color": [
+      "Sheran",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12030,
+    "name": "Varázsmező (2026)",
+    "text": "Kijátszásakor húzz 1 lapot! (K), ha kijátszol egy varázslatot vagy olyan lapot, aminek a nevében a \"varázs\" szó szerepel, azonnal kapsz 1_VP-t és gyógyulsz 2-t.",
+    "link": "varazsmezo_2026",
+    "type": [
+      "Bűbáj",
+      "ősmágia",
+      "reakció drágítás"
+    ],
+    "color": [
+      "Sheran",
+      "Fairlight"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12029,
+    "name": "Varázsdinnye",
+    "text": "Dobd a kezedből a Semmibe: célpont lény kap 1 élet- vagy izomjelzőt. Élet: 7. (K), vegyél le róla 3 életjelzőt: célpont lény kap 1 élet- vagy izomjelzőt.",
+    "link": "varazsdinnye",
+    "type": [
+      "Szörny",
+      "repül",
+      "reakció drágítás"
+    ],
+    "color": [
+      "Sheran",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12028,
+    "name": "Varázsborsó (2026)",
+    "text": "Dobd a kezedből a Semmibe: egy célpont sebződik vagy gyógyul 3-at. Élet: 7. (K), vegyél le róla 3 életjelzőt: egy célpont sebződik vagy gyógyul 3-at.",
+    "link": "varazsborso_2026",
+    "type": [
+      "Szörny",
+      "repül",
+      "reakció drágítás"
+    ],
+    "color": [
+      "Sheran",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12027,
+    "name": "Varázstök (2026)",
+    "text": "Dobd a kezedből a Semmibe: újrahasznosítás: 3 vagy Semmizés: 3. Élet: 7. (K), vegyél le róla 3 életjelzőt: újrahasznosítás: 3 vagy Semmizés: 3.",
+    "link": "varazstok_2026",
+    "type": [
+      "Szörny",
+      "repül",
+      "reakció drágítás"
+    ],
+    "color": [
+      "Sheran",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
+    "ID": 12026,
+    "name": "Varázsgomba (2026)",
+    "text": "Dobd a kezedből a Semmibe: célpont lapra rakj 2 dermesztés-, elmúlás-, vagy álomjelzőt. Élet: 7. (K), vegyél le róla 3 életjelzőt: célpont lapra rakj 2 dermesztés-, elmúlás- vagy álomjelzőt.",
+    "link": "varazsgomba_2026",
+    "type": [
+      "Szörny",
+      "repül",
+      "reakció drágítás"
+    ],
+    "color": [
+      "Sheran",
+      "Nincs"
+    ],
+    "commonness": "rare",
+    "editions": [
+      262
+    ],
+    "flags": []
+  },
+  {
     "ID": 12043,
     "name": "Jég bogyola (2026)",
     "text": "Blokkolás: 2. (P): létrejön a blokkolása. (P): rakj 2 dermesztésjelzőt célpont lapra! 1_VP, áldozd fel: húzz 1 lapot!",
@@ -289944,7 +290325,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "leszedés",
+      "húzás"
+    ]
   },
   {
     "ID": 12042,
@@ -289965,7 +290349,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "reakció",
+      "token"
+    ]
   },
   {
     "ID": 12041,
@@ -289988,7 +290375,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "húzás",
+      "sebzés"
+    ]
   },
   {
     "ID": 12025,
@@ -290010,7 +290400,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "leszedés",
+      "sebzés"
+    ]
   },
   {
     "ID": 12024,
@@ -290031,7 +290424,11 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "húzás",
+      "erőforrás",
+      "semmizés"
+    ]
   },
   {
     "ID": 12023,
@@ -290051,7 +290448,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "húzás",
+      "sebzés"
+    ]
   },
   {
     "ID": 12022,
@@ -290071,7 +290471,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "leszedés",
+      "sebzés"
+    ]
   },
   {
     "ID": 12021,
@@ -290091,7 +290494,11 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "leszedés",
+      "keresés",
+      "sebzés"
+    ]
   },
   {
     "ID": 12020,
@@ -290110,7 +290517,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "sebzés",
+      "dobatás"
+    ]
   },
   {
     "ID": 12019,
@@ -290130,7 +290540,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "sebzés",
+      "visszavétel"
+    ]
   },
   {
     "ID": 12018,
@@ -290151,7 +290564,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "reakció",
+      "sebzés"
+    ]
   },
   {
     "ID": 12017,
@@ -290172,7 +290588,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "sebzés",
+      "token"
+    ]
   },
   {
     "ID": 12016,
@@ -290193,7 +290612,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "sebzés",
+      "token"
+    ]
   },
   {
     "ID": 12015,
@@ -290213,7 +290635,10 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "keresés",
+      "sebzés"
+    ]
   },
   {
     "ID": 12014,
@@ -290233,7 +290658,9 @@
     "editions": [
       261
     ],
-    "flags": []
+    "flags": [
+      "sebzés"
+    ]
   },
   {
     "ID": 12040,
