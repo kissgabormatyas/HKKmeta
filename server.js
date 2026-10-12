@@ -1,9 +1,10 @@
 import express from "express";
 import Papa from "papaparse";
 import fs from "fs";
+import { calculateCardCost, createCostIndex } from "./lib/card-costs.js";
 
 const app = express();
-const port = 3000;
+const port = Number(process.env.PORT) || 3000;
 
 const formats = {
   classic: {
@@ -307,7 +308,7 @@ function shouldKeepTopCard(card) {
 // Topcards feldolgozása
 // ======================================
 
-function buildTopCards(csvCards, jsonCards, editions) {
+function buildTopCards(csvCards, jsonCards, editions, costIndex) {
   csvCards.forEach((card) => {
     prepareCsvCard(card);
   });
@@ -319,6 +320,7 @@ function buildTopCards(csvCards, jsonCards, editions) {
       const editionId = Math.max(...match.editions.map(Number));
 
       card["ID"] = match.ID;
+      card["costSummary"] = calculateCardCost(costIndex.get(Number(match.ID)));
       card["name"] = match.name;
       card["link"] = match.link;
 
@@ -382,7 +384,7 @@ function buildOrangeCards(csvCards, jsonCards) {
 // Formátum betöltése
 // ======================================
 
-async function loadFormat(formatKey, jsonCards, editions) {
+async function loadFormat(formatKey, jsonCards, editions, costIndex) {
   const format = formats[formatKey];
 
   const topcardsCsv = await readTextFile(format.topcardsPath);
@@ -394,7 +396,8 @@ async function loadFormat(formatKey, jsonCards, editions) {
   formatData[formatKey].cards = buildTopCards(
     topcardsRows,
     jsonCards,
-    editions
+    editions,
+    costIndex
   );
 
   formatData[formatKey].orangeCards = buildOrangeCards(
@@ -409,17 +412,21 @@ async function loadAllData() {
   try {
     const jsonData = await readTextFile("./data/cards.json");
     const editionData = await readTextFile("./data/editions.json");
+    const costData = JSON.parse(await readTextFile("./data/cards_2023-2026.json"));
+    const supplements = JSON.parse(await readTextFile("./data/card-cost-supplements.json"));
+    const costIndex = createCostIndex(costData.cards, supplements.cards);
 
 const jsonCards = JSON.parse(jsonData);
 const editions = JSON.parse(editionData);
 
 
-    await loadFormat("classic", jsonCards, editions);
-    await loadFormat("tm", jsonCards, editions);
+    await loadFormat("classic", jsonCards, editions, costIndex);
+    await loadFormat("tm", jsonCards, editions, costIndex);
 
     console.log("Minden adat betöltve");
   } catch (err) {
     console.error("Adatbetöltési hiba:", err);
+    throw err;
   }
 }
 
@@ -443,7 +450,7 @@ app.get("/api/orange-cards", (req, res) => {
 // Szerver indítása
 // ======================================
 
-loadAllData();
+await loadAllData();
 
 const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);

@@ -2,6 +2,8 @@
 // HKK Meta – fekete/arany felület
 // ======================================
 
+import { aggregateCostCurve } from "./cost-curves.js";
+
 Chart.register(ChartDataLabels);
 
 Chart.defaults.color = "#a9a18f";
@@ -899,6 +901,20 @@ function updateCardsCharts(cards, valueKey) {
   createBarChart("subtypeChart", prepareChartData(getArrayPropertyCounts(cards, "subtypes", valueKey)), true);
   createBarChart("iconChart", prepareChartData(getArrayPropertyCounts(cards, "icons", valueKey)));
   createBarChart("editionChart", prepareChartData(getEditionCounts(cards, valueKey)), true);
+  renderCostCurve("manaCurveChart", "mana", cards, valueKey);
+  renderCostCurve("totalCostCurveChart", "total", cards, valueKey);
+}
+
+function renderCostCurve(canvasId, costKey, cards, valueKey) {
+  const data = aggregateCostCurve(cards, valueKey, costKey);
+  data.colors = data.labels.map((_, index) => goldPalette[index % goldPalette.length]);
+  const canvas = document.getElementById(canvasId);
+  createBarChart(canvasId, data);
+  const missingNote = data.missing.length
+    ? ` Hiányzó költségadat: ${data.missing.length} lap (${data.missing.join(", ")}); kimaradó érték: ${formatNumber(data.missingValue)}.`
+    : "";
+  const summary = data.labels.map((label, index) => `${label}: ${formatNumber(data.values[index])}`).join("; ");
+  canvas.setAttribute("aria-label", `${costKey === "mana" ? "Varázspont szerinti eloszlás" : "Költség szerinti eloszlás"}. ${valueLabels[valueKey]}. ${summary}${missingNote}`);
 }
 
 function refreshCardsView() {

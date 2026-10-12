@@ -1,0 +1,238 @@
+{
+  "description": "A két TOP100 riport hiányzó költségadatai, a lapkereső lapképe alapján ellenőrizve. Az X és ? kifejezéseket a számítás alakítja át.",
+  "reviewedAt": "2026-10-12",
+  "cards": [
+    {
+      "id": 10677,
+      "name": "A sors keze",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "4-X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/a_sors_keze/10677"
+    },
+    {
+      "id": 10429,
+      "name": "Léleksorvasztás",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "4-X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/leleksorvasztas/10429"
+    },
+    {
+      "id": 7172,
+      "name": "Időlassító",
+      "variableCost": false,
+      "noCost": false,
+      "cost": {
+        "szk": 0
+      },
+      "source": "https://lapkereso.hkk.hu/lap/idolassito/7172"
+    },
+    {
+      "id": 10916,
+      "name": "A szirének átka",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/a_szirenek_atka/10916"
+    },
+    {
+      "id": 11635,
+      "name": "Tűztomboló (2026)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/tuztombolo_2026/11635"
+    },
+    {
+      "id": 12048,
+      "name": "Lohd Haven hikoltása (2026)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "2-X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/lohd_haven_hikoltasa_2026/12048"
+    },
+    {
+      "id": 10778,
+      "name": "Kyb'er, a csontangyal (2024)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/kyber_a_csontangyal_2024/10778"
+    },
+    {
+      "id": 11785,
+      "name": "A szépség dühe (2026)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "2-X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/a_szepseg_duhe_2026/11785"
+    },
+    {
+      "id": 10258,
+      "name": "Császári kínmester (2023)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "zanszilank": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/csaszari_kinmester_2023/10258"
+    },
+    {
+      "id": 10407,
+      "name": "Trikornis (2023)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "3-X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/trikornis_2023/10407"
+    },
+    {
+      "id": 11423,
+      "name": "Dimenzióvortex",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/dimenziovortex/11423"
+    },
+    {
+      "id": 11677,
+      "name": "Végképp eltörölni (2026)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/vegkepp_eltorolni_2026/11677"
+    },
+    {
+      "id": 11452,
+      "name": "Karácsony (2025)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X",
+        "zanszilank": 1
+      },
+      "source": "https://lapkereso.hkk.hu/lap/karacsony_2025/11452"
+    },
+    {
+      "id": 11672,
+      "name": "Gárdakapitány (2026)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "?"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/gardakapitany_2026/11672"
+    },
+    {
+      "id": 11353,
+      "name": "A Gigász megsemmisítése",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X",
+        "zanszilank": 1
+      },
+      "source": "https://lapkereso.hkk.hu/lap/a_gigasz_megsemmisitese/11353"
+    },
+    {
+      "id": 11829,
+      "name": "Fefe, a fura elf",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "?"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/fefe_a_fura_elf/11829"
+    },
+    {
+      "id": 11162,
+      "name": "A sárkánykirály dühe",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "2-X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/a_sarkanykiraly_duhe/11162"
+    },
+    {
+      "id": 11362,
+      "name": "Madárijesztő (2025)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/madarijeszto_2025/11362"
+    },
+    {
+      "id": 11361,
+      "name": "Gileak nagyúr",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/gileak_nagyur/11361"
+    },
+    {
+      "id": 11812,
+      "name": "Gemina akarata (2026)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/gemina_akarata_2026/11812"
+    },
+    {
+      "id": 10310,
+      "name": "Pihenő (2023)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/piheno_2023/10310"
+    },
+    {
+      "id": 10890,
+      "name": "Mozgástér",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "?"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/mozgaster/10890"
+    },
+    {
+      "id": 11805,
+      "name": "Solisar aurája (2026)",
+      "variableCost": true,
+      "noCost": false,
+      "cost": {
+        "mana": "X"
+      },
+      "source": "https://lapkereso.hkk.hu/lap/solisar_auraja_2026/11805"
+    }
+  ]
+}
