@@ -15,7 +15,7 @@ const formats = {
   tm: {
     topcardsPath: "./data/topcards-tm.csv",
     orangeCardsPath: "./data/orange-tm.csv",
-    period: "2026.08.01 - 2026.09.26."
+    period: "2026.08.01 - 2026.10.15."
   }
 };
 
