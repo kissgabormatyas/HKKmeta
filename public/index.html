@@ -74,6 +74,14 @@
   </header>
 
   <main class="app-main">
+    <div class="dataset-toolbar">
+      <span class="filter-title">Adatsor</span>
+      <div class="segmented-control dataset-switcher" role="group" aria-label="Statisztikai adatsor választása">
+        <button type="button" class="segment-button active" data-dataset="period" aria-pressed="true">Statisztikai időszak</button>
+        <button type="button" class="segment-button" data-dataset="nationals-2026" aria-pressed="false">Nemzeti Bajnokság</button>
+      </div>
+    </div>
+    <p id="dashboardStatus" class="dashboard-status" role="status" hidden></p>
     <section id="orangeView" class="view-panel active" data-view-panel="orange">
       <div class="page-heading orange-page-heading">
         <div>

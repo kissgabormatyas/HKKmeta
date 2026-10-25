@@ -211,6 +211,27 @@ select:focus-visible {
   animation: viewIn 0.24s ease;
 }
 
+.dataset-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.dataset-switcher {
+  flex-wrap: wrap;
+}
+
+.dashboard-status {
+  color: var(--muted);
+  padding: 20px 0;
+}
+
+.app-main.is-loading .view-panel {
+  visibility: hidden;
+}
+
 .view-panel[hidden] {
   display: none !important;
 }

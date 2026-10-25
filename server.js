@@ -4,18 +4,32 @@ import fs from "fs";
 import { calculateCardCost, createCostIndex } from "./lib/card-costs.js";
 
 const app = express();
-const port = Number(process.env.PORT) || 3000;
+const port = Number(process.env.PORT ?? 3000);
 
-const formats = {
-  classic: {
-    topcardsPath: "./data/topcards-classic.csv",
-    orangeCardsPath: "./data/orange-classic.csv",
-    period: "2026.06.15 - 2026.10.25."
+const datasets = {
+  period: {
+    classic: {
+      topcardsPath: "./data/topcards-classic.csv",
+      orangeCardsPath: "./data/orange-classic.csv",
+      period: "2026.06.15 - 2026.10.25."
+    },
+    tm: {
+      topcardsPath: "./data/topcards-tm.csv",
+      orangeCardsPath: "./data/orange-tm.csv",
+      period: "2026.08.01 - 2026.10.25."
+    }
   },
-  tm: {
-    topcardsPath: "./data/topcards-tm.csv",
-    orangeCardsPath: "./data/orange-tm.csv",
-    period: "2026.08.01 - 2026.10.25."
+  "nationals-2026": {
+    classic: {
+      topcardsPath: "./data/topcards-2026classic.csv",
+      orangeCardsPath: "./data/orange-2026classic.csv",
+      period: "2026 Nemzeti Bajnokság"
+    },
+    tm: {
+      topcardsPath: "./data/topcards-2026tm.csv",
+      orangeCardsPath: "./data/orange-2026tm.csv",
+      period: "2026 Nemzeti Bajnokság"
+    }
   }
 };
 
@@ -99,20 +113,15 @@ app.get("/api/format-info", (req, res) => {
   const format = getRequestedFormat(req);
 
   res.json({
-    period: formats[format].period
+    period: datasets[getRequestedDataset(req)][format].period
   });
 });
 
-const formatData = {
-  classic: {
-    cards: [],
-    orangeCards: []
-  },
-  tm: {
-    cards: [],
-    orangeCards: []
-  }
-};
+const formatData = Object.fromEntries(
+  Object.entries(datasets).map(([dataset, formats]) => [dataset,
+    Object.fromEntries(Object.keys(formats).map((format) => [format, { cards: [], orangeCards: [] }]))
+  ])
+);
 
 app.use(express.static("public"));
 
@@ -176,11 +185,15 @@ function parseCsv(data) {
 function getRequestedFormat(req) {
   const requestedFormat = req.query.format;
 
-  if (formats[requestedFormat]) {
+  if (Object.hasOwn(datasets.period, requestedFormat)) {
     return requestedFormat;
   }
 
   return "classic";
+}
+
+function getRequestedDataset(req) {
+  return Object.hasOwn(datasets, req.query.dataset) ? req.query.dataset : "period";
 }
 
 function getMatchingTypes(cardTypes, allowedTypes) {
@@ -384,8 +397,8 @@ function buildOrangeCards(csvCards, jsonCards) {
 // Formátum betöltése
 // ======================================
 
-async function loadFormat(formatKey, jsonCards, editions, costIndex) {
-  const format = formats[formatKey];
+async function loadFormat(datasetKey, formatKey, jsonCards, editions, costIndex) {
+  const format = datasets[datasetKey][formatKey];
 
   const topcardsCsv = await readTextFile(format.topcardsPath);
   const orangeCardsCsv = await readTextFile(format.orangeCardsPath);
@@ -393,19 +406,19 @@ async function loadFormat(formatKey, jsonCards, editions, costIndex) {
   const topcardsRows = parseCsv(topcardsCsv);
   const orangeCardsRows = parseCsv(orangeCardsCsv);
 
-  formatData[formatKey].cards = buildTopCards(
+  formatData[datasetKey][formatKey].cards = buildTopCards(
     topcardsRows,
     jsonCards,
     editions,
     costIndex
   );
 
-  formatData[formatKey].orangeCards = buildOrangeCards(
+  formatData[datasetKey][formatKey].orangeCards = buildOrangeCards(
     orangeCardsRows,
     jsonCards
   );
 
-  console.log(`${formatKey} formátum betöltve`);
+  console.log(`${datasetKey} / ${formatKey} formátum betöltve`);
 }
 
 async function loadAllData() {
@@ -420,8 +433,11 @@ const jsonCards = JSON.parse(jsonData);
 const editions = JSON.parse(editionData);
 
 
-    await loadFormat("classic", jsonCards, editions, costIndex);
-    await loadFormat("tm", jsonCards, editions, costIndex);
+    for (const [datasetKey, formats] of Object.entries(datasets)) {
+      for (const formatKey of Object.keys(formats)) {
+        await loadFormat(datasetKey, formatKey, jsonCards, editions, costIndex);
+      }
+    }
 
     console.log("Minden adat betöltve");
   } catch (err) {
@@ -437,13 +453,13 @@ const editions = JSON.parse(editionData);
 app.get("/api/cards", (req, res) => {
   const format = getRequestedFormat(req);
 
-  res.json(formatData[format].cards);
+  res.json(formatData[getRequestedDataset(req)][format].cards);
 });
 
 app.get("/api/orange-cards", (req, res) => {
   const format = getRequestedFormat(req);
 
-  res.json(formatData[format].orangeCards);
+  res.json(formatData[getRequestedDataset(req)][format].orangeCards);
 });
 
 // ======================================
@@ -453,7 +469,7 @@ app.get("/api/orange-cards", (req, res) => {
 await loadAllData();
 
 const server = app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server running on port ${server.address().port}`);
 });
 
 server.on("error", (err) => {

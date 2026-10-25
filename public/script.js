@@ -61,6 +61,9 @@ const valueLabels = {
 const charts = {};
 
 const state = {
+  currentDataset: "period",
+  loadRequestId: 0,
+  isLoading: false,
   currentFormat: "classic",
   currentView: "orange",
   orangeValueKey: "Főpakli összesen",
@@ -204,21 +207,24 @@ function setupViewNavigation() {
   });
 }
 
-function setupFormatSwitcher() {
-  const buttons = document.querySelectorAll("[data-format]");
+function setupDataSwitcher(attribute, stateKey) {
+  const buttons = document.querySelectorAll(`[data-${attribute}]`);
 
   buttons.forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset[attribute] === state[stateKey]));
     button.addEventListener("click", () => {
-      const selectedFormat = button.dataset.format;
+      const selectedValue = button.dataset[attribute];
 
-      if (!selectedFormat || selectedFormat === state.currentFormat) {
+      if (!selectedValue || selectedValue === state[stateKey]) {
         return;
       }
 
-      state.currentFormat = selectedFormat;
+      state[stateKey] = selectedValue;
 
       buttons.forEach((item) => {
-        item.classList.toggle("active", item.dataset.format === selectedFormat);
+        const isActive = item.dataset[attribute] === selectedValue;
+        item.classList.toggle("active", isActive);
+        item.setAttribute("aria-pressed", String(isActive));
       });
 
       resetCardFilters();
@@ -868,6 +874,7 @@ function renderTopCards(cards, valueKey) {
 // ======================================
 
 function refreshOrangeView() {
+  if (state.isLoading) return;
   const cards = state.orangeCards;
   const valueKey = state.orangeValueKey;
   const valueLabel = valueLabels[valueKey] || valueKey;
@@ -918,6 +925,7 @@ function renderCostCurve(canvasId, costKey, cards, valueKey) {
 }
 
 function refreshCardsView() {
+  if (state.isLoading) return;
   const filteredCards = getSelectedCards(state.allCards);
   const valueKey = state.filter.valueKey;
   const positiveCards = filteredCards.filter((card) => getCardValue(card, valueKey) > 0);
@@ -947,17 +955,29 @@ async function fetchJson(url) {
 }
 
 async function loadDashboardData() {
+  const requestId = ++state.loadRequestId;
+  const query = new URLSearchParams({ format: state.currentFormat, dataset: state.currentDataset });
+  const main = document.querySelector(".app-main");
+  const status = document.getElementById("dashboardStatus");
+  state.isLoading = true;
+  main.classList.add("is-loading");
+  main.setAttribute("aria-busy", "true");
+  status.hidden = false;
+  status.textContent = "Statisztikák betöltése…";
   setText("dataPeriod", "Betöltés…");
 
   try {
     const [formatInfo, cards, orangeCards] = await Promise.all([
-      fetchJson(`/api/format-info?format=${state.currentFormat}`),
-      fetchJson(`/api/cards?format=${state.currentFormat}`),
-      fetchJson(`/api/orange-cards?format=${state.currentFormat}`)
+      fetchJson(`/api/format-info?${query}`),
+      fetchJson(`/api/cards?${query}`),
+      fetchJson(`/api/orange-cards?${query}`)
     ]);
 
+    if (requestId !== state.loadRequestId) return;
+    state.isLoading = false;
     state.allCards = Array.isArray(cards) ? cards : [];
     state.orangeCards = Array.isArray(orangeCards) ? orangeCards : [];
+    status.hidden = true;
 
     setText("dataPeriod", formatInfo.period || "Nincs megadva");
 
@@ -971,10 +991,21 @@ async function loadDashboardData() {
       refreshCardsView();
     }
   } catch (error) {
+    if (requestId !== state.loadRequestId) return;
+    state.isLoading = true;
+    status.hidden = false;
+    state.allCards = [];
+    state.orangeCards = [];
+    Object.keys(charts).forEach(destroyChart);
     console.error("Adatbetöltési hiba:", error);
     setText("dataPeriod", "Az adatok nem tölthetők be");
-    showError("bestOrangeCards", "Az adatok betöltése sikertelen. Ellenőrizd a szervert és az API-végpontokat.");
-    showError("top10Cards", "Az adatok betöltése sikertelen. Ellenőrizd a szervert és az API-végpontokat.");
+    status.textContent = "Az adatok betöltése sikertelen. Válassz másik adatsort vagy töltsd újra az oldalt.";
+  } finally {
+    if (requestId === state.loadRequestId) {
+      main.setAttribute("aria-busy", "false");
+      // Hiba esetén a korábbi adatsor helyett az állapotüzenet marad látható.
+      main.classList.toggle("is-loading", state.isLoading);
+    }
   }
 }
 
@@ -983,7 +1014,8 @@ async function loadDashboardData() {
 // ======================================
 
 setupViewNavigation();
-setupFormatSwitcher();
+setupDataSwitcher("format", "currentFormat");
+setupDataSwitcher("dataset", "currentDataset");
 setupMetricSwitchers();
 loadDashboardData();
 
